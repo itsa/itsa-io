@@ -32,6 +32,7 @@ var IO = require("../io")(window),
     describe('io-stream', function () {
 
         it('get', function (done) {
+            this.timeout(5000);
             var options, cb, pck = 0;
             cb = function(data) {
                 pck++;
