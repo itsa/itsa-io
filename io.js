@@ -1,5 +1,3 @@
-/* globals XMLHttpRequest:true */
-
 /**
  * Provides core IO-functionality.
  *
