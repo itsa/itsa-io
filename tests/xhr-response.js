@@ -21,6 +21,8 @@
 
     describe('Response-object', function () {
 
+        this.timeout(5000);
+
         it('responseText', function (done) {
             var options = {
                 url: URL+'/action/responsetxt',
@@ -67,6 +69,9 @@
     });
 
     describe('Analysing params', function () {
+
+        this.timeout(5000);
+
         describe('GET-params', function () {
 
             it('through querystring', function (done) {

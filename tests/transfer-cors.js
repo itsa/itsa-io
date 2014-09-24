@@ -28,6 +28,8 @@
 
 describe('CORS-io response-object', function () {
 
+    this.timeout(5000);
+
     it('responseText', function (done) {
         var options = {
             url: URL+'/action/responsetxt',
@@ -74,6 +76,8 @@ describe('CORS-io response-object', function () {
 });
 
 describe('CORS-io-transfer methods', function () {
+
+    this.timeout(5000);
 
     describe('data', function () {
 
@@ -405,6 +409,8 @@ describe('CORS-io-transfer methods', function () {
 });
 
 describe('CORS with io-xml', function () {
+
+    this.timeout(5000);
 
     it('xml response', function (done) {
         IO.readXML(URL+'/action/responsexml').then(

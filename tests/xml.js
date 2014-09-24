@@ -24,6 +24,8 @@
 
     describe('io.readXML()', function () {
 
+        this.timeout(5000);
+
         it('xml response', function (done) {
             IO.readXML(URL+'/action/responsexml').then(
                 function(responseXML) {

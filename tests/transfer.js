@@ -27,6 +27,8 @@
 
     describe('io-transfer methods', function () {
 
+        this.timeout(5000);
+
         describe('data', function () {
             it('get', function () {
                 return IO.get(URL+'/action/responsetxt').should.become('Acknowledge responsetext ok');
