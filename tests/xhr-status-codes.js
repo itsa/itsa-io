@@ -60,6 +60,8 @@
 
     describe('Status codes', function () {
 
+        this.timeout(5000);
+
         it('response 200-series', function (done) {
             this.timeout(10000);
             var options = {
