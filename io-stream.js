@@ -2,7 +2,10 @@
 
 var NAME = '[io-stream]: ',
     UNKNOW_ERROR = 'Unknown XDR-error', // XDR doesn't specify the error
-    REQUEST_TIMEOUT = 'Request-timeout',
+    REQUEST_TIMEOUT = 'Request-timeout';
+
+
+module.exports = function (window) {
 
     /*
      * Adds properties to the xhr-object: in case of streaming,
@@ -14,11 +17,11 @@ var NAME = '[io-stream]: ',
      * @param options {Object} options of the request
      * @private
     */
-    _entendXHR = function(xhr, props, options) {
+    var _entendXHR = function(xhr, props, options) {
         if (typeof options.streamback === 'function') {
             if (!props._isXHR2 && !props._isXDR) {
-                if (typeof XDomainRequest !== 'undefined') {
-                    xhr = new XDomainRequest();
+                if (typeof window.XDomainRequest !== 'undefined') {
+                    xhr = new window.XDomainRequest();
                     props._isXDR = true;
                 }
             }
@@ -102,4 +105,5 @@ var NAME = '[io-stream]: ',
         }
     };
 
-module.exports = IO_Stream;
+    return IO_Stream;
+};

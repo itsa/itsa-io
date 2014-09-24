@@ -8,7 +8,7 @@ var expect = require('chai').expect,
     should = require('chai').should();
 
 var IO = require("../io")(window),
-    IO_STREAM = require("../io-stream.js"),
+    IO_STREAM = require("../io-stream.js")(window),
     URL = 'http://servercors.itsa.io/io',
     ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
     ie = ieTest && ieTest[1],
