@@ -1,3 +1,6 @@
+
+"use strict";
+
 /**
  * Extends io by adding the method `readXML` to it.
  * Should be called using  the provided `mergeInto`-method like this:
@@ -7,17 +10,15 @@
  * var IOcors = require("io-cors");
  * IOcors.mergeInto(IO);
  *
+ *
+ * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
+ * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+ *
  * @module io
  * @submodule io-cors
  * @class IO
  * @since 0.0.1
- *
- * <i>Copyright (c) 2014 Parcela - https://github.com/Parcela</i>
- * New BSD License - https://github.com/ItsAsbreuk/itsa-library/blob/master/LICENSE
- *
 */
-
-"use strict";
 
 var NAME = '[io-cors-ie9]: ',
     XmlDOMParser = require('xmldom').DOMParser,

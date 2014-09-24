@@ -25,8 +25,10 @@ var IO = require("../io")(window),
     // XDomainRequest only fires the `onprogress`-event when the block of code exceeds 2k !
     // see: http://blogs.msdn.com/b/ieinternals/archive/2010/04/06/comet-streaming-in-internet-explorer-with-xmlhttprequest-and-xdomainrequest.aspx
     // Thus, we prepend the response with 2k of whitespace
-    for (i=0; i<2000; i++) {
-        block2k += ' ';
+    if (xdr) {
+        for (i=0; i<2000; i++) {
+            block2k += ' ';
+        }
     }
 
     describe('io-stream', function () {
@@ -41,7 +43,8 @@ var IO = require("../io")(window),
             options = {
                 url: URL+'/action/stream',
                 method: 'GET',
-                streamback: cb
+                streamback: cb,
+                data: {xdr: xdr}
             };
 
             IO.request(options).then(
