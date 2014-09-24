@@ -1,5 +1,3 @@
-/* globals XDomainRequest: true */
-
 "use strict";
 
 var NAME = '[io-stream]: ',
