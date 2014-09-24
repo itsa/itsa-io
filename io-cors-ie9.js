@@ -1,6 +1,3 @@
-
-/* globals window:true, XDomainRequest: true */
-
 /**
  * Extends io by adding the method `readXML` to it.
  * Should be called using  the provided `mergeInto`-method like this:
