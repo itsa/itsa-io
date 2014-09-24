@@ -61,7 +61,7 @@
     describe('Status codes', function () {
 
         it('response 200-series', function (done) {
-            this.timeout(5000);
+            this.timeout(10000);
             var options = {
                     url: URL,
                     method: 'GET',
@@ -105,7 +105,7 @@
         });
 
         it('response 300-series', function (done) {
-            this.timeout(5000);
+            this.timeout(10000);
             var options = {
                     url: URL,
                     method: 'GET',
@@ -141,7 +141,7 @@
         });
 
         it('response 400-series', function (done) {
-            this.timeout(5000);
+            this.timeout(10000);
             var options = {
                     url: URL,
                     method: 'GET',
@@ -177,7 +177,7 @@
         });
 
         it('response 500-series', function (done) {
-            this.timeout(5000);
+            this.timeout(10000);
             var options = {
                     url: URL,
                     method: 'GET',
