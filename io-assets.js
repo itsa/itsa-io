@@ -9,14 +9,14 @@
  * var IOassets = require("io-assets");
  * IOassets.mergeInto(IO);
  *
+ *
+ * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
+ * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+ *
  * @module io
  * @submodule io-assets
  * @class IO
  * @since 0.0.1
- *
- * <i>Copyright (c) 2014 Parcela - https://github.com/Parcela</i>
- * New BSD License - https://github.com/ItsAsbreuk/itsa-library/blob/master/LICENSE
- *
 */
 
 var NAME = '[io-assets]: ',

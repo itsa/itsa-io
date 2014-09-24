@@ -25,6 +25,9 @@
  * 4. No authentication or cookies will be sent with the request.
  * more info: http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/xdomainrequest-restrictions-limitations-and-workarounds.aspx
  *
+ * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
+ * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+ *
  * @module io
  * @submodule io-win
  * @class IO
