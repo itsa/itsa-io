@@ -1,0 +1,54 @@
+{
+    "name": "io",
+    "version": "0.0.1",
+    "description": "Promised IO",
+    "author": [
+        {
+            "name": "Marco Asbreuk",
+            "email": "marco@itsasbreuk.nl"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/itsa/io"
+    },
+    "bugs": {
+        "url": "https://github.com/itsa/io/issues"
+    },
+    "keywords": [
+        "itsa",
+        "io",
+        "promise"
+    ],
+    "main": "io.js",
+    "dependencies": {
+        "ypromise": "^0.2.3",
+        "extend-js": "itsa/extend-js",
+        "utils": "itsa/utils",
+        "xmldom": "^0.1.19",
+        "querystring": "^0.2.0"
+    },
+    "devDependencies": {
+        "chai": "^1.9.1",
+        "istanbul": "^0.3.0",
+        "jshint": "^2.5.5",
+        "mocha": "^1.21.4",
+        "node-win": "itsa/node-win"
+    },
+    "engines": {
+        "node": "*"
+    },
+    "scripts": {
+        "pretest": "jshint ./*.js",
+        "test": "mocha tests/*.js  && istanbul cover $(which _mocha) -- tests/*.js",
+        "lint": "jshint ./*.js"
+    },
+    "homepage": "http://itsa.github.io",
+    "maintainers": [
+        {
+            "name": "Marco Asbreuk",
+            "email": "marco@itsasbreuk.nl"
+        }
+    ],
+    "license": "New BSD"
+}
