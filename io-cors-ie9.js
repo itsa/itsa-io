@@ -55,8 +55,8 @@ module.exports = function (window) {
         if (!props._isXHR2) {
             crossDomain = isCrossDomain(options.url);
             if (crossDomain && !props._isXDR) {
-                if (typeof XDomainRequest !== 'undefined') {
-                    xhr = new XDomainRequest();
+                if (typeof window.XDomainRequest !== 'undefined') {
+                    xhr = new window.XDomainRequest();
                     props._isXDR = true;
                 }
             }
