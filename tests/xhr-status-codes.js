@@ -56,7 +56,7 @@
         };
 
     // we might need cors to make the tests pass in travis
-    xdr && require("../io-cors-ie9.js")(window).mergeInto(IO);
+    xdr && require("../io-cors-ie9.js")(window);
 
     describe('Status codes', function () {
 

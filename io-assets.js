@@ -19,46 +19,46 @@
  * @since 0.0.1
 */
 
-var NAME = '[io-assets]: ',
+var NAME = '[io-assets]: ';
 
-IO_ASSETS = {
-    mergeInto: function (ioInstance) {
-        /**
-         * Creates a `<style>` tag to load the CSS file at the given url.
-         *
-         * @method getCSS
-         * @param url {String} URL of the style sheet  to load
-         * @param [options] {Object}
-         *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
-         *    @param [options.headers] {Object} HTTP request headers.
-         *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
-         * @return {Promise} Promise holding the request. Has an additional .abort() method to cancel the request.
-         * <ul>
-         *     <li>on success: xhr {XMLHttpRequest1|XMLHttpRequest2} xhr-response</li>
-         *     <li>on failure: reason {Error}</li>
-         * </ul>
-        */
-        ioInstance.getCSS = function(url, options) {
-        };
+module.exports = function (window) {
+    var IO = require('./io.js')(window);
 
-        /**
-         * Creates a `<script>` tag to load the script at the given url.
-         *
-         * @method getJS
-         * @param url {String} URL of the style sheet  to load
-         * @param [options] {Object}
-         *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
-         *    @param [options.headers] {Object} HTTP request headers.
-         *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
-         * @return {Promise} Promise holding the request. Has an additional .abort() method to cancel the request.
-         * <ul>
-         *     <li>on success: xhr {XMLHttpRequest1|XMLHttpRequest2} xhr-response</li>
-         *     <li>on failure: reason {Error}</li>
-         * </ul>
-        */
-        ioInstance.getJS = function(url, options) {
-        };
-    }
+    /**
+     * Creates a `<style>` tag to load the CSS file at the given url.
+     *
+     * @method getCSS
+     * @param url {String} URL of the style sheet  to load
+     * @param [options] {Object}
+     *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
+     *    @param [options.headers] {Object} HTTP request headers.
+     *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
+     * @return {Promise} Promise holding the request. Has an additional .abort() method to cancel the request.
+     * <ul>
+     *     <li>on success: xhr {XMLHttpRequest1|XMLHttpRequest2} xhr-response</li>
+     *     <li>on failure: reason {Error}</li>
+     * </ul>
+    */
+    IO.getCSS = function(url, options) {
+    };
+
+    /**
+     * Creates a `<script>` tag to load the script at the given url.
+     *
+     * @method getJS
+     * @param url {String} URL of the style sheet  to load
+     * @param [options] {Object}
+     *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
+     *    @param [options.headers] {Object} HTTP request headers.
+     *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
+     * @return {Promise} Promise holding the request. Has an additional .abort() method to cancel the request.
+     * <ul>
+     *     <li>on success: xhr {XMLHttpRequest1|XMLHttpRequest2} xhr-response</li>
+     *     <li>on failure: reason {Error}</li>
+     * </ul>
+    */
+    IO.getJS = function(url, options) {
+    };
+
+    return IO;
 };
-
-module.exports = IO_ASSETS;
