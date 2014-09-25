@@ -14,7 +14,6 @@
         IO_TRANSFER = require("../io-transfer.js"),
         IO_CORS = require("../io-cors-ie9.js")(window),
         IO_XML = require("../io-xml.js"),
-        TYPEOF = require('utils').typeOf,
         URL = 'http://servercors.itsa.io/io',
         REG_APP_JSON = /^application\/json/,
         ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
@@ -311,7 +310,7 @@ describe('CORS-io-transfer methods', function () {
             };
             IO.insert(URL+'/extractdata', data, {parseJSONDate: true}).then(
                 function(data) {
-                    TYPEOF(data.personal.birthday).should.be.eql('date');
+                    expect(data.personal.birthday instanceof Date).to.be.eql(true);
                     done();
                 }
             ).then(
