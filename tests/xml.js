@@ -10,17 +10,14 @@
 
     chai.use(require('chai-as-promised'));
 
-    var IO = require("../io")(window),
-        IO_XML = require("../io-xml.js"),
+    var IO = require("../io-xml.js")(window),
         URL = 'http://servercors.itsa.io/io',
         ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
         ie = ieTest && ieTest[1],
         xdr = ie && (ie<10);
 
-    IO_XML.mergeInto(IO);
-
     // we might need cors to make the tests pass in travis
-    xdr && require("../io-cors-ie9.js")(window).mergeInto(IO);
+    xdr && require("../io-cors-ie9.js")(window);
 
     describe('io.readXML()', function () {
 

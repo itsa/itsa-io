@@ -39,16 +39,16 @@ module.exports = function (window) {
     // We need a singleton IO, because submodules might merge in. You can't have them merging
     // into some other IO-instance than which is used.
     var Glob = (typeof global !== 'undefined' ? global : /* istanbul ignore next */ this);
-    if (!Glob._parcelaModules) {
-        Object.defineProperty(Glob, '_parcelaModules', {
+    if (!Glob._ITSAmodules) {
+        Object.defineProperty(Glob, '_ITSAmodules', {
             configurable: false,
             enumerable: false,
             writable: false,
             value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
         });
     }
-    if (Glob._parcelaModules.IO) {
-        return Glob._parcelaModules.IO;
+    if (Glob._ITSAmodules.IO) {
+        return Glob._ITSAmodules.IO;
     }
 
     var ENCODE_URI_COMPONENT = encodeURIComponent,
@@ -303,7 +303,7 @@ module.exports = function (window) {
         IO._setHeaders
     ];
 
-    Glob._parcelaModules.IO = IO;
+    Glob._ITSAmodules.IO = IO;
 
     return IO;
 };

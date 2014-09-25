@@ -4,8 +4,9 @@ var NAME = '[io-stream]: ',
     UNKNOW_ERROR = 'Unknown XDR-error', // XDR doesn't specify the error
     REQUEST_TIMEOUT = 'Request-timeout';
 
-
 module.exports = function (window) {
+
+    var IO = require('./io.js')(window),
 
     /*
      * Adds properties to the xhr-object: in case of streaming,
@@ -17,7 +18,7 @@ module.exports = function (window) {
      * @param options {Object} options of the request
      * @private
     */
-    var _entendXHR = function(xhr, props, options) {
+    _entendXHR = function(xhr, props, options) {
         if (typeof options.streamback === 'function') {
             if (!props._isXHR2 && !props._isXDR) {
                 if (typeof window.XDomainRequest !== 'undefined') {
@@ -94,16 +95,12 @@ module.exports = function (window) {
             console.log(NAME, '_setStreamHeader');
             xhr.setRequestHeader('X-Stream', 'true');
         }
-    },
-
-    IO_Stream = {
-        mergeInto: function (io) {
-            io._xhrList.push(_entendXHR);
-            io._xhrInitList.push(_readyHandleXDR);
-            io._xhrInitList.push(_progressHandle);
-            io._xhrInitList.push(_setStreamHeader);
-        }
     };
 
-    return IO_Stream;
+    IO._xhrList.push(_entendXHR);
+    IO._xhrInitList.push(_readyHandleXDR);
+    IO._xhrInitList.push(_progressHandle);
+    IO._xhrInitList.push(_setStreamHeader);
+
+    return IO;
 };

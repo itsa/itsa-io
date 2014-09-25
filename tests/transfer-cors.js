@@ -11,18 +11,15 @@
     chai.use(require('chai-as-promised'));
 
     var IO = require("../io")(window),
-        IO_TRANSFER = require("../io-transfer.js"),
-        IO_CORS = require("../io-cors-ie9.js")(window),
-        IO_XML = require("../io-xml.js"),
         URL = 'http://servercors.itsa.io/io',
         REG_APP_JSON = /^application\/json/,
         ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
         ie = ieTest && ieTest[1],
         xdr = ie && (ie<10);
 
-    IO_TRANSFER.mergeInto(IO);
-    IO_CORS.mergeInto(IO);
-    IO_XML.mergeInto(IO);
+    require("../io-transfer.js")(window);
+    require("../io-cors-ie9.js")(window);
+    require("../io-xml.js")(window);
 
 
 describe('CORS-io response-object', function () {
