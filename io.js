@@ -1,39 +1,13 @@
 /**
  * Provides core IO-functionality.
  *
- * The returned xhr DOES support CORS for all modern browsers.
- * To use CORS, you need to setup the responseserver right
- * More info about CORS: http://remysharp.com/2011/04/21/getting-cors-working/
- *
- *
- *
- *
- * TODO: make STREAMING with IE9-browsers work: the XDomainRequest() seems not to fire the onprogress-event...
- *       (and XMLHttpRequest1 doesn't have this event at all)
- * TODO: make CORS with IE9-browsers work: the XDomainRequest() fails currently on cors..
- *
- *
- *
- *
- * Using CORS with IE9-browsers need special consideration, for it uses the XDomainRequest():
- * 1. Only GET and POST methods are supported. Other methods will be reset into one of these,
- *    so make sure the cross-domain-server handles all requests as being send with the GET or POST method.
- * 2. Only text/plain is supported for the request's Content-Type header. This will lead into troubles when handling
- *    POST-requests: the cross-domain-server needs to extract the parameters itself. For nodejs, there is a nice npm module:
- *    `express-ie-cors` https://github.com/advanced/express-ie-cors/blob/master/lib/express-ie-cors.js
- * 3. No custom headers can be added to the request.
- * 4. No authentication or cookies will be sent with the request.
- * more info: http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/xdomainrequest-restrictions-limitations-and-workarounds.aspx
  *
  * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
  * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
  *
  * @module io
- * @submodule io-win
  * @class IO
 */
-
-/* global module:false */
 
 "use strict";
 
