@@ -22,8 +22,9 @@
     ],
     "main": "io.js",
     "dependencies": {
+        "polyfill": "itsa/polyfill",
         "ypromise": "^0.2.3",
-        "extend-js": "itsa/extend-js",
+        "js-ext": "itsa/js-ext",
         "utils": "itsa/utils",
         "xmldom": "^0.1.19",
         "querystring": "^0.2.0"
