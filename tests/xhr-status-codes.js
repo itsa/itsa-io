@@ -6,7 +6,7 @@
 
     var expect = require('chai').expect,
     	should = require('chai').should();
-    require('extend-js');
+    require('js-ext');
 
     var IO = require("../io")(window),
         URL = 'http://servercors.itsa.io/io/status',

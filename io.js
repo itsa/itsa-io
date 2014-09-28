@@ -11,8 +11,9 @@
 
 "use strict";
 
+require('polyfill');
 require('ypromise');
-require('extend-js');
+require('js-ext');
 
 var NAME = '[io]: ',
     GET = 'GET',

@@ -18,7 +18,7 @@
  * @since 0.0.1
 */
 
-require('extend-js');
+require('js-ext');
 
 var NAME = '[io-xml]: ';
 
