@@ -11,7 +11,7 @@
 
 "use strict";
 
-require('polyfill');
+require('polyfill/polyfill-base.js');
 require('ypromise');
 require('js-ext');
 
@@ -262,6 +262,7 @@ module.exports = function (window) {
                 props = {},
                 xhr, promise;
             options || (options={});
+            promise = Promise.manage(options.streamback);
 
             xhr = new window.XMLHttpRequest();
             props._isXHR2 = ('withCredentials' in xhr) || (window.navigator.userAgent==='fake');
@@ -269,7 +270,7 @@ module.exports = function (window) {
             // xhr might be changed, also private properties might be extended
             instance._xhrList.each(
                 function(fn) {
-                    xhr = fn(xhr, props, options);
+                    xhr = fn(xhr, props, options, promise);
                 }
             );
             if (!xhr) {
@@ -278,8 +279,6 @@ module.exports = function (window) {
             xhr.merge(props);
             console.log(NAME, 'request creating xhr of type: '+ (props._isXHR2 ? 'XMLHttpRequest2' : (props._isXDR ? 'XDomainRequest' : 'XMLHttpRequest1')));
             console.log(NAME, 'CORS-IE: '+ props._CORS_IE + ', canStream: '+props._canStream);
-
-            promise = Promise.manage(options.streamback);
 
             // Don't use xhr.timeout --> IE<10 throws an error when set xhr.timeout
             // We use a timer that aborts the request
@@ -291,7 +290,7 @@ module.exports = function (window) {
                            promise.reject(new Error(REQUEST_TIMEOUT));
                            xhr._aborted = true; // must be set: IE9 won't allow to read anything on xhr after being aborted
                            xhr.abort();
-                       }, options.timeout || instance.config.reqTimeout || DEF_REQ_TIMEOUT)
+                       }, options.timeout || instance.config.timeout || DEF_REQ_TIMEOUT)
             });
 
             instance._initXHR(xhr, options, promise);

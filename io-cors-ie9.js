@@ -54,7 +54,7 @@ module.exports = function (window) {
         return domain && (currentDomain !== domain);
     },
 
-    entendXHR = function(xhr, props, options) {
+    entendXHR = function(xhr, props, options /*, promise */) {
         var crossDomain;
         if (!props._isXHR2) {
             crossDomain = isCrossDomain(options.url);
