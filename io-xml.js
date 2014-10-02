@@ -38,7 +38,6 @@ module.exports = function (window) {
      * @private
     */
     _entendXHR = function(xhr, props, options, promise) {
-console.warn(JSON.stringify(options));
         var parser, followingstream, regegexp_endcont, regexpxml, xmlstart, container, endcontainer;
         if ((typeof options.streamback === 'function') && options.headers && (options.headers.Accept==='text/xml')) {
             console.log(NAME, 'entendXHR');
@@ -127,7 +126,8 @@ console.warn(JSON.stringify(options));
                 // Also: XDR DOES NOT support getResponseHeader() --> so we must just assume the data is text/xml
                 var contenttype = !xhrResponse._isXDR && (xhrResponse.getResponseHeader('Content-Type') || xhrResponse.getResponseHeader('content-type'));
                 if (xhrResponse._isXDR || /^text\/xml/.test(contenttype)) {
-                    return xhrResponse.responseXML;
+                    // cautious: when streaming, xhrResponse.responseXML will be undefined in case of using XDR
+                    return xhrResponse.responseXML || (new window.DOMParser()).parseFromString(xhrResponse.responseText, 'text/xml');
                 }
                 // when code comes here: no valid xml response:
                 throw new Error('recieved Content-Type is no XML');

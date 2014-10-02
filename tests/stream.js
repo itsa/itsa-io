@@ -59,7 +59,59 @@ var IO = require("../io-stream.js")(window),
             );
         });
 
-        it('IO.read with stream', function (done) {
+        it('IO.request with stream with small portions', function (done) {
+            this.timeout(10000);
+            var options, cb, build = '';
+            cb = function(data) {
+                build += data;
+            };
+            options = {
+                url: URL+'/action/stream',
+                method: 'GET',
+                streamback: cb,
+                data: {xdr: xdr, type: 'noblock'}
+            };
+
+            IO.request(options).then(
+                function(xhr) {
+                    expect(build).to.eql(xhr.responseText);
+                    xhr.responseText.should.be.eql('package 1package 2package 3package 4');
+                    done();
+                }
+            )
+            .then(
+                undefined,
+                done
+            );
+        });
+
+        it('IO.request with stream when server doesn\'t stream', function (done) {
+            this.timeout(10000);
+            var options, cb, build = '';
+            cb = function(data) {
+                build += data;
+            };
+            options = {
+                url: URL+'/action/stream',
+                method: 'GET',
+                streamback: cb,
+                data: {xdr: xdr, type: 'nostream'}
+            };
+
+            IO.request(options).then(
+                function(xhr) {
+                    expect(build).to.eql(xhr.responseText);
+                    xhr.responseText.should.be.eql('package 1package 2package 3package 4');
+                    done();
+                }
+            )
+            .then(
+                undefined,
+                done
+            );
+        });
+
+        it('IO.read array with stream', function (done) {
             this.timeout(10000);
             var options, cb, pck = 0;
             cb = function(data) {
@@ -70,10 +122,93 @@ var IO = require("../io-stream.js")(window),
                 streamback: cb
             };
 
-            IO.read(URL+'/action/stream', {xdr: xdr, type: 'json'}, options).then(
+            IO.read(URL+'/action/stream', {xdr: xdr, type: 'jsonarray'}, options).then(
                 function(data) {
                     expect(pck).to.eql(4);
                     data.should.be.eql([{a:1},{a:2},{a:3},{a:4}]);
+                    done();
+                }
+            )
+            .then(
+                undefined,
+                done
+            );
+        });
+
+        it('IO.read object with stream', function (done) {
+            this.timeout(10000);
+            var options, cb, pck = 0;
+            cb = function(data) {
+                pck++;
+                switch(pck) {
+                    case 1:
+                        expect(data).to.eql({a: 1});
+                        break;
+                    case 2:
+                        expect(data).to.eql({b: 2});
+                        break;
+                    case 3:
+                        expect(data).to.eql({c: 3});
+                        break;
+                    case 4:
+                        expect(data).to.eql({d: 4});
+                        break;
+                }
+            };
+            options = {
+                streamback: cb
+            };
+
+            IO.read(URL+'/action/stream', {xdr: xdr, type: 'jsonobject'}, options).then(
+                function(data) {
+                    expect(pck).to.eql(4);
+                    data.should.be.eql({a:1, b:2, c:3, d:4});
+                    done();
+                }
+            )
+            .then(
+                undefined,
+                done
+            );
+        });
+
+        it('IO.read object with stream with small portions', function (done) {
+            this.timeout(10000);
+            var options, cb, build = {};
+            cb = function(data) {
+                build.merge(data);
+            };
+            options = {
+                streamback: cb
+            };
+
+            IO.read(URL+'/action/stream', {xdr: xdr, type: 'jsonobjectnoblock'}, options).then(
+                function(data) {
+                    expect(build).to.eql(data);
+                    data.should.be.eql({a:1, b:2, c:3, d:4});
+                    done();
+                }
+            )
+            .then(
+                undefined,
+                done
+            );
+        });
+
+        it('IO.read object with stream when server doesn\'t stream', function (done) {
+            this.timeout(10000);
+            var options, cb, build = {};
+            cb = function(data) {
+                build.merge(data);
+            };
+            options = {
+                streamback: cb
+            };
+
+            IO.read(URL+'/action/stream', {xdr: xdr, type: 'jsonobjectnostream'}, options).then(
+                function(data) {
+                    expect(build).to.eql(data);
+                    data.should.be.eql({a:1, b:2, c:3, d:4});
                     done();
                 }
             )
@@ -98,6 +233,60 @@ var IO = require("../io-stream.js")(window),
             IO.readXML(URL+'/action/stream', {xdr: xdr, type: 'xml'}, options).then(
                 function(responseXML) {
                     expect(pck).to.eql(4);
+                    responseXML.documentElement.getElementsByTagName('response')[2].firstChild.nodeValue.should.be.eql('3');
+                    expect(responseXML.documentElement.getElementsByTagName('response').length).to.be.eql(4);
+                    done();
+                }
+            )
+            .then(
+                undefined,
+                done
+            );
+        });
+
+        it('IO.readXML with stream with small portions', function (done) {
+            this.timeout(10000);
+            var options, cb, build;
+            cb = function(responseXML) {
+                build = responseXML;
+            };
+            options = {
+                streamback: cb
+            };
+
+            IO.readXML(URL+'/action/stream', {xdr: xdr, type: 'xmlnoblock'}, options).then(
+                function(responseXML) {
+                    if (xdr) {
+                        var oSerializer = new window.XMLSerializer();
+                        expect(oSerializer.serializeToString(build)).to.eql(oSerializer.serializeToString(responseXML));
+                    }
+                    responseXML.documentElement.getElementsByTagName('response')[2].firstChild.nodeValue.should.be.eql('3');
+                    expect(responseXML.documentElement.getElementsByTagName('response').length).to.be.eql(4);
+                    done();
+                }
+            )
+            .then(
+                undefined,
+                done
+            );
+        });
+
+        it('IO.readXML with stream when server doesn\'t stream', function (done) {
+            this.timeout(10000);
+            var options, cb, build;
+            cb = function(responseXML) {
+                build = responseXML;
+            };
+            options = {
+                streamback: cb
+            };
+
+            IO.readXML(URL+'/action/stream', {xdr: xdr, type: 'xmlnostream'}, options).then(
+                function(responseXML) {
+                    if (xdr) {
+                        var oSerializer = new window.XMLSerializer();
+                        expect(oSerializer.serializeToString(build)).to.eql(oSerializer.serializeToString(responseXML));
+                    }
                     responseXML.documentElement.getElementsByTagName('response')[2].firstChild.nodeValue.should.be.eql('3');
                     expect(responseXML.documentElement.getElementsByTagName('response').length).to.be.eql(4);
                     done();

@@ -79,11 +79,12 @@ module.exports = function (window) {
             // for XDomainRequest, we need 'onload' instead of 'onreadystatechange'
             xhr.onload || (xhr.onload=function() {
                 var responseText = xhr.responseText,
-                    xmlRequest = headers && (headers.Accept==='text/xml');
+                    xmlRequest = headers && (headers.Accept==='text/xml'),
+                    responseobject;
                 clearTimeout(xhr._timer);
                 console.log(NAME, 'xhr.onload invokes with responseText='+responseText);
                 // to remain consisten with XHR, we define an object with the same structure
-                var responseobject = {
+                responseobject = {
                     _contenttype: xhr.contentType,
                     responseText: responseText,
                     responseXML: xmlRequest ? new XmlDOMParser().parseFromString(responseText) : null,

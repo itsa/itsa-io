@@ -199,6 +199,12 @@ module.exports = function (window) {
                     clearTimeout(xhr._timer);
                     if ((xhr.status>=200) && (xhr.status<300)) {
                         console.log(NAME, 'xhr.onreadystatechange will fulfill xhr-instance: '+xhr.responseText);
+                        // In case streamback function is set, but when no intermediate stream-data was send
+                        // (or in case of XDR: below 2kb it doesn't call onprogress)
+                        // --> we might need to call onprogress ourselve.
+                        if (xhr._isStream && !xhr._gotstreamed) {
+                            xhr.onprogress(xhr.responseText);
+                        }
                         promise.fulfill(xhr);
                     }
                     else {
