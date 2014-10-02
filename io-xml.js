@@ -20,11 +20,56 @@
 
 require('js-ext');
 
-var NAME = '[io-xml]: ';
+var NAME = '[io-xml]: ',
+    REGEXP_XML = /(?: )*(<\?xml (?:.)*\?>)(?: )*(<(?:\w)+>)/;
 
 module.exports = function (window) {
 
-    var IO = require('./io.js')(window);
+    var IO = require('./io.js')(window),
+
+    /*
+     * Adds properties to the xhr-object: in case of streaming,
+     * xhr._parseStream=function is created to parse streamed data.
+     *
+     * @method _progressHandle
+     * @param xhr {Object} containing the xhr-instance
+     * @param props {Object} the propertie-object that is added too xhr and can be expanded
+     * @param options {Object} options of the request
+     * @private
+    */
+    _entendXHR = function(xhr, props, options, promise) {
+        var parser, followingstream, regegexp_endcont, regexpxml, xmlstart, container, endcontainer;
+        if ((typeof options.streamback === 'function') && options.headers && (options.headers.Accept==='text/xml')) {
+            console.log(NAME, 'entendXHR');
+            parser = new window.DOMParser();
+            xhr._parseStream = function(streamData) {
+                var fragment, parialdata;
+                console.log(NAME, 'entendXHR --> _parseStream');
+                try {
+                    if (!followingstream) {
+                        regexpxml = streamData.match(REGEXP_XML);
+                        if (regexpxml) {
+                            xmlstart = regexpxml[1];
+                            container = regexpxml[2];
+                            endcontainer = '</'+container.substr(1);
+                            regegexp_endcont = new RegExp('(.*)'+endcontainer+'( )*$');
+                        }
+                    }
+                    parialdata = (followingstream ? xmlstart+container : '') + streamData;
+                    regegexp_endcont.test(streamData) || (parialdata+=endcontainer);
+                    fragment = parser.parseFromString(parialdata, 'text/xml');
+                    followingstream = true;
+                    return fragment;
+                }
+                catch(err) {
+                    promise.reject(err);
+                }
+            };
+        }
+        return xhr;
+    };
+
+    IO._xhrList.push(_entendXHR);
 
     /**
      * Performs an AJAX request with the GET HTTP method and expects a JSON-object.
@@ -78,9 +123,11 @@ module.exports = function (window) {
             function(xhrResponse) {
                 // if the responsetype is no "text/xml", then throw an error, else return xhrResponse.responseXML;
                 // note that nodejs has "Content-Type" in lowercase!
-                var contenttype = xhrResponse.getResponseHeader('Content-Type') || xhrResponse.getResponseHeader('content-type');
-                if (/^text\/xml/.test(contenttype)) {
-                    return xhrResponse.responseXML;
+                // Also: XDR DOES NOT support getResponseHeader() --> so we must just assume the data is text/xml
+                var contenttype = !xhrResponse._isXDR && (xhrResponse.getResponseHeader('Content-Type') || xhrResponse.getResponseHeader('content-type'));
+                if (xhrResponse._isXDR || /^text\/xml/.test(contenttype)) {
+                    // cautious: when streaming, xhrResponse.responseXML will be undefined in case of using XDR
+                    return xhrResponse.responseXML || (new window.DOMParser()).parseFromString(xhrResponse.responseText, 'text/xml');
                 }
                 // when code comes here: no valid xml response:
                 throw new Error('recieved Content-Type is no XML');

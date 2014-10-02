@@ -2,6 +2,7 @@
 
 var NAME = '[io-stream]: ',
     UNKNOW_ERROR = 'Unknown XDR-error', // XDR doesn't specify the error
+    INVALID_DATA = 'invalid data',
     REQUEST_TIMEOUT = 'Request-timeout';
 
 module.exports = function (window) {
@@ -18,7 +19,7 @@ module.exports = function (window) {
      * @param options {Object} options of the request
      * @private
     */
-    _entendXHR = function(xhr, props, options) {
+    _entendXHR = function(xhr, props, options /*, promise */) {
         if (typeof options.streamback === 'function') {
             if (!props._isXHR2 && !props._isXDR) {
                 if (typeof window.XDomainRequest !== 'undefined') {
@@ -46,7 +47,14 @@ module.exports = function (window) {
             xhr._progressPos = 0;
             xhr.onprogress = function() {
                 console.log(NAME, 'xhr.onprogress received data #'+xhr.responseText+'#');
-                promise.callback(xhr.responseText.substr(xhr._progressPos));
+                var data = xhr.responseText.substr(xhr._progressPos);
+
+                // backup the fact that streaming occured
+                xhr._gotstreamed = true;
+
+                xhr._parseStream && (data=xhr._parseStream(data));
+
+                promise.callback(data);
                 xhr._progressPos = xhr.responseText.length;
             };
         }
@@ -72,6 +80,9 @@ module.exports = function (window) {
             xhr.onload = function() {
                 clearTimeout(xhr._timer);
                 console.log(NAME, 'xhr.onload invokes with responseText='+xhr.responseText);
+                if (xhr._isStream && !xhr._gotstreamed) {
+                    xhr.onprogress(xhr.responseText);
+                }
                 promise.fulfill(xhr);
             };
             xhr.onerror = function() {
