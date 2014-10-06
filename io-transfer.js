@@ -23,7 +23,7 @@ require('js-ext/lib/string.js');
 
 var NAME = '[io-transfer]: ',
     REVIVER = function(key, value) {
-        return value.toDate() || value;
+        return ((typeof value==='string') && value.toDate()) || value;
     },
     MIME_JSON = 'application/json',
     CONTENT_TYPE = 'Content-Type',
