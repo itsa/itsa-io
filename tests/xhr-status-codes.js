@@ -90,7 +90,7 @@
                         }
                     }
                 );
-            }
+            };
 
             for (res=200; res<=206; res++) {
                 checklist[res] && a.push(createIO(res));
@@ -126,7 +126,7 @@
                         return true;
                     }
                 );
-            }
+            };
 
             for (res=300; res<=307; res++) {
                 checklist[res] && a.push(createIO(res));
@@ -162,7 +162,7 @@
                         return true;
                     }
                 );
-            }
+            };
 
             for (res=400; res<=417; res++) {
                 checklist[res] && a.push(createIO(res));
@@ -198,7 +198,7 @@
                         return true;
                     }
                 );
-            }
+            };
 
             for (res=500; res<=505; res++) {
                 checklist[res] && a.push(createIO(res));

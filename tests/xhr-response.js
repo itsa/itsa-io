@@ -50,7 +50,7 @@
                 headers: {'Content-Type': 'application/xml; charset=utf-8', 'Accept': 'text/xml'},
                 method: 'GET',
                 responseType: 'text/xml'
-            }
+            };
             IO.request(options).then(
                 function(response) {
                     response.responseXML.getElementsByTagName('response')[0].firstChild.nodeValue.should.be.eql('10');
@@ -78,7 +78,7 @@
                 var options = {
                     url: URL+'?data=25&dummy1=5',
                     method: 'GET'
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge get-request with data: 25');
@@ -95,7 +95,7 @@
                     url: URL,
                     method: 'GET',
                     data: {data: 25}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge get-request with data: 25');
@@ -112,7 +112,7 @@
                     url: URL+'?data=25&dummy1=5',
                     method: 'GET',
                     data: {dummy2: 10}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge get-request with data: 25');
@@ -129,7 +129,7 @@
                     url: URL+'?dummy1=5&dummy2=10',
                     method: 'GET',
                     data: {data: 25}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge get-request with data: 25');
@@ -149,7 +149,7 @@
                 var options = {
                     url: URL+'?data=25&dummy=5',
                     method: 'DELETE'
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge '+(xdr ? 'get' : 'delete')+'-request with data: 25');
@@ -166,7 +166,7 @@
                     url: URL,
                     method: 'DELETE',
                     data: {data: 25}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge '+(xdr ? 'get' : 'delete')+'-request with data: 25');
@@ -183,7 +183,7 @@
                     url: URL+'?data=25&dummy=5',
                     method: 'DELETE',
                     data: {dummy2: 10}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge '+(xdr ? 'get' : 'delete')+'-request with data: 25');
@@ -200,7 +200,7 @@
                     url: URL+'?dummy1=5&dummy2=10',
                     method: 'DELETE',
                     data: {data: 25}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge '+(xdr ? 'get' : 'delete')+'-request with data: 25');
@@ -220,7 +220,7 @@
                 var options = {
                     url: URL+'?data=25&dummy1=5',
                     method: 'PUT'
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge '+(xdr ? 'post' : 'put')+'-request with data: undefined');
@@ -237,7 +237,7 @@
                     url: URL,
                     method: 'PUT',
                     data: {data: 25}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge '+(xdr ? 'post' : 'put')+'-request with data: 25');
@@ -254,7 +254,7 @@
                     url: URL+'?data=25&dummy1=5',
                     method: 'PUT',
                     data: {dummy2: 10}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge '+(xdr ? 'post' : 'put')+'-request with data: undefined');
@@ -271,7 +271,7 @@
                     url: URL+'?dummy1=5&dummy2=10',
                     method: 'PUT',
                     data: {data: 25}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge '+(xdr ? 'post' : 'put')+'-request with data: 25');
@@ -291,7 +291,7 @@
                 var options = {
                     url: URL+'?data=25&dummy1=5',
                     method: 'POST'
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge post-request with data: undefined');
@@ -308,7 +308,7 @@
                     url: URL,
                     method: 'POST',
                     data: {data: 25}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge post-request with data: 25');
@@ -325,7 +325,7 @@
                     url: URL+'?data=25&dummy1=5',
                     method: 'POST',
                     data: {dummy2: 10}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge post-request with data: undefined');
@@ -342,7 +342,7 @@
                     url: URL+'?dummy1=5&dummy2=10',
                     method: 'POST',
                     data: {data: 25}
-                }
+                };
                 IO.request(options).then(
                     function(response) {
                         response.responseText.should.be.eql('Acknowledge post-request with data: 25');
