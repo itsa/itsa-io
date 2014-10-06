@@ -18,10 +18,12 @@
  * @since 0.0.1
 */
 
+require('polyfill/lib/json.js');
+require('js-ext/lib/string.js');
+
 var NAME = '[io-transfer]: ',
-    DATEPATTERN = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/,
     REVIVER = function(key, value) {
-        return DATEPATTERN.test(value) ? new Date(value) : value;
+        return value.toDate() || value;
     },
     MIME_JSON = 'application/json',
     CONTENT_TYPE = 'Content-Type',
@@ -30,8 +32,6 @@ var NAME = '[io-transfer]: ',
     REGEXP_OBJECT = /^( )*{/,
     REGEXP_REMOVE_LAST_COMMA = /^(.*),( )*$/,
     entendXHR;
-
-require('polyfill/lib/json.js');
 
 module.exports = function (window) {
 

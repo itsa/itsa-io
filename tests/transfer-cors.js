@@ -53,7 +53,7 @@ describe('CORS-io response-object', function () {
             headers: {'Content-Type': 'application/xml; charset=utf-8', 'Accept': 'text/xml'},
             method: 'GET',
             responseType: 'text/xml'
-        }
+        };
         IO.request(options).then(
             function(response) {
                 response.responseXML.getElementsByTagName('response')[0].firstChild.nodeValue.should.be.eql('10');
