@@ -21,6 +21,9 @@
         "promise"
     ],
     "main": "io.js",
+    "directories": {
+        "extra": "./extra"
+    },
     "dependencies": {
         "polyfill": "itsa/polyfill",
         "js-ext": "itsa/js-ext",

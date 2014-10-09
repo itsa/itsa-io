@@ -38,7 +38,7 @@ var NAME = '[io-cors-ie9]: ',
 
 module.exports = function (window) {
 
-    var IO = require('./io.js')(window),
+    var IO = require('../io.js')(window),
 
     isCrossDomain = function (url) {
         var domain;

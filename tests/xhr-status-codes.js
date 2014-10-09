@@ -8,7 +8,7 @@
     	should = require('chai').should();
     require('js-ext');
 
-    var IO = require("../io")(window),
+    var IO = require("../extra/io")(window),
         URL = 'http://servercors.itsa.io/io/status',
         ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
         ie = ieTest && ieTest[1],
@@ -56,7 +56,7 @@
         };
 
     // we might need cors to make the tests pass in travis
-    xdr && require("../io-cors-ie9.js")(window);
+    xdr && require("../extra/io-cors-ie9.js")(window);
 
     describe('Status codes', function () {
 

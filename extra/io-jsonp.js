@@ -24,7 +24,7 @@ var NAME = '[io-jsonp]: ',
 
 module.exports = function (window) {
 
-    var IO = require('./io.js')(window);
+    var IO = require('../io.js')(window);
 
     /**
      * Creates a `<style>` tag to load the CSS file at the given url.

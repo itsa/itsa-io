@@ -10,7 +10,7 @@
 
     chai.use(require('chai-as-promised'));
 
-    var IO = require("../io-transfer.js")(window),
+    var IO = require("../extra/io-transfer.js")(window),
         URL = 'http://servercors.itsa.io/io',
         REG_APP_JSON = /^application\/json/,
         ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
@@ -18,7 +18,7 @@
         xdr = ie && (ie<10);
 
     // we might need cors to make the tests pass in travis
-    xdr && require("../io-cors-ie9.js")(window);
+    xdr && require("../extra/io-cors-ie9.js")(window);
 
     describe('io-transfer methods', function () {
 

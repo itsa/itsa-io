@@ -7,7 +7,7 @@ var NAME = '[io-stream]: ',
 
 module.exports = function (window) {
 
-    var IO = require('./io.js')(window),
+    var IO = require('../io.js')(window),
 
     /*
      * Adds properties to the xhr-object: in case of streaming,
