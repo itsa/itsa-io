@@ -19,7 +19,7 @@
  * @since 0.0.1
 */
 
-var NAME = '[io-assets]: ';
+// var NAME = '[io-assets]: ';
 
 module.exports = function (window) {
     var IO = require('../io.js')(window);
@@ -39,7 +39,7 @@ module.exports = function (window) {
      *     <li>on failure: reason {Error}</li>
      * </ul>
     */
-    IO.getCSS = function(url, options) {
+    IO.getCSS = function(/* url, options */) {
     };
 
     /**
@@ -57,7 +57,7 @@ module.exports = function (window) {
      *     <li>on failure: reason {Error}</li>
      * </ul>
     */
-    IO.getJS = function(url, options) {
+    IO.getJS = function(/* url, options */) {
     };
 
     return IO;

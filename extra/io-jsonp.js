@@ -19,8 +19,8 @@
  * @since 0.0.1
 */
 
-var NAME = '[io-jsonp]: ',
-    idgenerator = require('utils').idgenerator;
+// var NAME = '[io-jsonp]: ',
+// var idgenerator = require('utils').idgenerator;
 
 module.exports = function (window) {
 
@@ -42,7 +42,7 @@ module.exports = function (window) {
      * </ul>
     */
     IO.readObjectJSONP = function(url, options) {
-        var callback = idgenerator('JSONP');
+        // var callback = idgenerator('JSONP');
         return this.getJS(url, options).then(
             function(response) {
                 // not 'try' 'catch', because, if parsing fails, we actually WANT the promise to be rejected

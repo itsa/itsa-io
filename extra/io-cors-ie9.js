@@ -23,7 +23,6 @@
 var NAME = '[io-cors-ie9]: ',
     XmlDOMParser = require('xmldom').DOMParser,
     UNKNOW_ERROR = 'Unknown XDR-error', // XDR doesn't specify the error
-    REQUEST_TIMEOUT = 'Request-timeout',
     REGEXP_EXTRACT_URL = new RegExp("^((([a-z][a-z0-9-.]*):\/\/)?(([^\/?#:]+)(:(\\d+))?)?)?(\/?[a-z0-9-._~%!$&'()*+,;=@]+(\/[a-z0-9-._~%!$&'()*+,;=:@]+)*\/?|\/)?([#?](.*)|$)", "i"),
     currentDomain,
     BODY_METHODS = {
@@ -73,7 +72,7 @@ module.exports = function (window) {
         return xhr;
     },
 
-    readyHandleXDR = function(xhr, promise, headers, method) {
+    readyHandleXDR = function(xhr, promise, headers /*, method */) {
         if (xhr._isXDR) {
             console.log(NAME, 'readyHandleXDR');
             // for XDomainRequest, we need 'onload' instead of 'onreadystatechange'

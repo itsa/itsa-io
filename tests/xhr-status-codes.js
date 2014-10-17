@@ -1,4 +1,5 @@
 /*global describe, it */
+/*jshint unused:false */
 
 (function (window) {
 
