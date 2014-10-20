@@ -18,8 +18,8 @@
  * @since 0.0.1
 */
 
-require('polyfill/lib/json.js');
 require('js-ext/lib/string.js');
+require('polyfill/polyfill-base.js');
 
 var NAME = '[io-transfer]: ',
     REVIVER = function(key, value) {
