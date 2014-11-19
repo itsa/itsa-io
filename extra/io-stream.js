@@ -5,6 +5,19 @@ var NAME = '[io-stream]: ',
 
 module.exports = function (window) {
 
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_Stream) {
+        return window._ITSAmodules.IO_Stream; // IO_Stream was already created
+    }
+
     var IO = require('../io.js')(window),
 
     /*
@@ -110,6 +123,8 @@ module.exports = function (window) {
     IO._xhrInitList.push(_readyHandleXDR);
     IO._xhrInitList.push(_progressHandle);
     IO._xhrInitList.push(_setStreamHeader);
+
+    window._ITSAmodules.IO_Stream = IO;
 
     return IO;
 };

@@ -34,6 +34,19 @@ var NAME = '[io-transfer]: ',
 
 module.exports = function (window) {
 
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_Transfer) {
+        return window._ITSAmodules.IO_Transfer; // IO_Transfer was already created
+    }
+
     var IO = require('../io.js')(window),
 
     /*
@@ -421,6 +434,8 @@ module.exports = function (window) {
         returnPromise.abort = ioPromise.abort;
         return returnPromise;
     };
+
+    window._ITSAmodules.IO_Transfer = IO;
 
     return IO;
 };

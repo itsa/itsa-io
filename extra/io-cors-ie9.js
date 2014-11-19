@@ -37,6 +37,19 @@ var NAME = '[io-cors-ie9]: ',
 
 module.exports = function (window) {
 
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_Cors) {
+        return window._ITSAmodules.IO_Cors; // IO_Cors was already created
+    }
+
     var IO = require('../io.js')(window),
 
     isCrossDomain = function (url) {
@@ -110,6 +123,8 @@ module.exports = function (window) {
 
     IO._xhrList.push(entendXHR);
     IO._xhrInitList.push(readyHandleXDR);
+
+    window._ITSAmodules.IO_Cors = IO;
 
     return IO;
 };

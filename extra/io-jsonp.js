@@ -26,6 +26,21 @@ module.exports = function (window) {
 
     var IO = require('../io.js')(window);
 
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_JSONP) {
+        return IO; // IO_JSONP was already created
+    }
+
+    window._ITSAmodules.IO_JSONP = IO;
+
     /**
      * Creates a `<style>` tag to load the CSS file at the given url.
      *
