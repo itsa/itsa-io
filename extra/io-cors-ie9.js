@@ -23,7 +23,6 @@
 var NAME = '[io-cors-ie9]: ',
     XmlDOMParser = require('xmldom').DOMParser,
     UNKNOW_ERROR = 'Unknown XDR-error', // XDR doesn't specify the error
-    REQUEST_TIMEOUT = 'Request-timeout',
     REGEXP_EXTRACT_URL = new RegExp("^((([a-z][a-z0-9-.]*):\/\/)?(([^\/?#:]+)(:(\\d+))?)?)?(\/?[a-z0-9-._~%!$&'()*+,;=@]+(\/[a-z0-9-._~%!$&'()*+,;=:@]+)*\/?|\/)?([#?](.*)|$)", "i"),
     currentDomain,
     BODY_METHODS = {
@@ -38,7 +37,20 @@ var NAME = '[io-cors-ie9]: ',
 
 module.exports = function (window) {
 
-    var IO = require('./io.js')(window),
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_Cors) {
+        return window._ITSAmodules.IO_Cors; // IO_Cors was already created
+    }
+
+    var IO = require('../io.js')(window),
 
     isCrossDomain = function (url) {
         var domain;
@@ -73,7 +85,7 @@ module.exports = function (window) {
         return xhr;
     },
 
-    readyHandleXDR = function(xhr, promise, headers, method) {
+    readyHandleXDR = function(xhr, promise, headers /*, method */) {
         if (xhr._isXDR) {
             console.log(NAME, 'readyHandleXDR');
             // for XDomainRequest, we need 'onload' instead of 'onreadystatechange'
@@ -111,6 +123,8 @@ module.exports = function (window) {
 
     IO._xhrList.push(entendXHR);
     IO._xhrInitList.push(readyHandleXDR);
+
+    window._ITSAmodules.IO_Cors = IO;
 
     return IO;
 };

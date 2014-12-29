@@ -18,8 +18,8 @@
  * @since 0.0.1
 */
 
-require('polyfill/lib/json.js');
 require('js-ext/lib/string.js');
+require('polyfill/polyfill-base.js');
 
 var NAME = '[io-transfer]: ',
     REVIVER = function(key, value) {
@@ -30,12 +30,24 @@ var NAME = '[io-transfer]: ',
     DELETE = 'delete',
     REGEXP_ARRAY = /^( )*\[/,
     REGEXP_OBJECT = /^( )*{/,
-    REGEXP_REMOVE_LAST_COMMA = /^(.*),( )*$/,
-    entendXHR;
+    REGEXP_REMOVE_LAST_COMMA = /^(.*),( )*$/;
 
 module.exports = function (window) {
 
-    var IO = require('./io.js')(window),
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_Transfer) {
+        return window._ITSAmodules.IO_Transfer; // IO_Transfer was already created
+    }
+
+    var IO = require('../io.js')(window),
 
     /*
      * Adds properties to the xhr-object: in case of streaming,
@@ -48,7 +60,7 @@ module.exports = function (window) {
      * @private
     */
     _entendXHR = function(xhr, props, options /*, promise */) {
-        var isarray, isobject, isstring, parialdata, regexpcomma, followingstream;
+        var isarray, isobject, parialdata, regexpcomma, followingstream;
         if ((typeof options.streamback === 'function') && options.headers && (options.headers.Accept==='application/json')) {
             console.log(NAME, 'entendXHR');
             xhr._parseStream = function(streamData) {
@@ -422,6 +434,8 @@ module.exports = function (window) {
         returnPromise.abort = ioPromise.abort;
         return returnPromise;
     };
+
+    window._ITSAmodules.IO_Transfer = IO;
 
     return IO;
 };

@@ -21,9 +21,11 @@
         "promise"
     ],
     "main": "io.js",
+    "directories": {
+        "extra": "./extra"
+    },
     "dependencies": {
         "polyfill": "itsa/polyfill",
-        "ypromise": "^0.2.3",
         "js-ext": "itsa/js-ext",
         "utils": "itsa/utils",
         "xmldom": "^0.1.19",

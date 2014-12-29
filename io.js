@@ -12,7 +12,6 @@
 "use strict";
 
 require('polyfill/polyfill-base.js');
-require('ypromise');
 require('js-ext');
 
 var NAME = '[io]: ',

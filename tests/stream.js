@@ -1,4 +1,5 @@
 /*global describe, it */
+/*jshint unused:false */
 
 (function (window) {
 
@@ -7,7 +8,7 @@
 var expect = require('chai').expect,
     should = require('chai').should();
 
-var IO = require("../io-stream.js")(window),
+var IO = require("../extra/io-stream.js")(window),
     URL = 'http://servercors.itsa.io/io',
     ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
     ie = ieTest && ieTest[1],
@@ -15,10 +16,10 @@ var IO = require("../io-stream.js")(window),
     xdr = ie && (ie<10),
     i;
 
-    require("../io-transfer.js")(window);
-    require("../io-xml.js")(window);
+    require("../extra/io-transfer.js")(window);
+    require("../extra/io-xml.js")(window);
     // we might need cors to make the tests pass in travis
-    xdr && require("../io-cors-ie9.js")(window);
+    xdr && require("../extra/io-cors-ie9.js")(window);
 
     // Very interesting issue where we must take care with:
     // XDomainRequest only fires the `onprogress`-event when the block of code exceeds 2k !

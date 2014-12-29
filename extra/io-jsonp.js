@@ -6,28 +6,45 @@
  *
  * @example
  * var IO = require("io");
- * var IOassets = require("io-assets");
- * IOassets.mergeInto(IO);
+ * var IOjsonp = require("io-jsonp");
+ * IOjsonp.mergeInto(IO);
  *
  *
  * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
  * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
  *
  * @module io
- * @submodule io-assets
+ * @submodule io-jsonp
  * @class IO
  * @since 0.0.1
 */
 
-var NAME = '[io-assets]: ';
+// var NAME = '[io-jsonp]: ',
+// var idgenerator = require('utils').idgenerator;
 
 module.exports = function (window) {
-    var IO = require('./io.js')(window);
+
+    var IO = require('../io.js')(window);
+
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_JSONP) {
+        return IO; // IO_JSONP was already created
+    }
+
+    window._ITSAmodules.IO_JSONP = IO;
 
     /**
      * Creates a `<style>` tag to load the CSS file at the given url.
      *
-     * @method getCSS
+     * @method readObjectJSONP
      * @param url {String} URL of the style sheet  to load
      * @param [options] {Object}
      *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
@@ -39,25 +56,14 @@ module.exports = function (window) {
      *     <li>on failure: reason {Error}</li>
      * </ul>
     */
-    IO.getCSS = function(url, options) {
-    };
-
-    /**
-     * Creates a `<script>` tag to load the script at the given url.
-     *
-     * @method getJS
-     * @param url {String} URL of the style sheet  to load
-     * @param [options] {Object}
-     *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
-     *    @param [options.headers] {Object} HTTP request headers.
-     *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
-     * @return {Promise} Promise holding the request. Has an additional .abort() method to cancel the request.
-     * <ul>
-     *     <li>on success: xhr {XMLHttpRequest1|XMLHttpRequest2} xhr-response</li>
-     *     <li>on failure: reason {Error}</li>
-     * </ul>
-    */
-    IO.getJS = function(url, options) {
+    IO.readObjectJSONP = function(url, options) {
+        // var callback = idgenerator('JSONP');
+        return this.getJS(url, options).then(
+            function(response) {
+                // not 'try' 'catch', because, if parsing fails, we actually WANT the promise to be rejected
+                return JSON.parse(response);
+            }
+        );
     };
 
     return IO;

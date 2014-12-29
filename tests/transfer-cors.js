@@ -1,4 +1,5 @@
 /*global describe, it */
+/*jshint unused:false */
 
 (function (window) {
 
@@ -10,16 +11,16 @@
 
     chai.use(require('chai-as-promised'));
 
-    var IO = require("../io")(window),
+    var IO = require("../extra/io")(window),
         URL = 'http://servercors.itsa.io/io',
         REG_APP_JSON = /^application\/json/,
         ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
         ie = ieTest && ieTest[1],
         xdr = ie && (ie<10);
 
-    require("../io-transfer.js")(window);
-    require("../io-cors-ie9.js")(window);
-    require("../io-xml.js")(window);
+    require("../extra/io-transfer.js")(window);
+    require("../extra/io-cors-ie9.js")(window);
+    require("../extra/io-xml.js")(window);
 
 
 describe('CORS-io response-object', function () {

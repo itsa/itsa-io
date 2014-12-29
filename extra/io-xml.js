@@ -25,7 +25,20 @@ var NAME = '[io-xml]: ',
 
 module.exports = function (window) {
 
-    var IO = require('./io.js')(window),
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_XML) {
+        return window._ITSAmodules.IO_XML; // IO_XML was already created
+    }
+
+    var IO = require('../io.js')(window),
 
     /*
      * Adds properties to the xhr-object: in case of streaming,
@@ -137,6 +150,8 @@ module.exports = function (window) {
         returnPromise.abort = ioPromise.abort;
         return returnPromise;
     };
+
+    window._ITSAmodules.IO_XML = IO;
 
     return IO;
 };

@@ -1,13 +1,24 @@
 "use strict";
 
 var NAME = '[io-stream]: ',
-    UNKNOW_ERROR = 'Unknown XDR-error', // XDR doesn't specify the error
-    INVALID_DATA = 'invalid data',
-    REQUEST_TIMEOUT = 'Request-timeout';
+    UNKNOW_ERROR = 'Unknown XDR-error'; // XDR doesn't specify the error
 
 module.exports = function (window) {
 
-    var IO = require('./io.js')(window),
+    if (!window._ITSAmodules) {
+        Object.defineProperty(window, '_ITSAmodules', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
+        });
+    }
+
+    if (window._ITSAmodules.IO_Stream) {
+        return window._ITSAmodules.IO_Stream; // IO_Stream was already created
+    }
+
+    var IO = require('../io.js')(window),
 
     /*
      * Adds properties to the xhr-object: in case of streaming,
@@ -101,7 +112,7 @@ module.exports = function (window) {
      * @param method {String} the request-method used
      * @private
     */
-    _setStreamHeader = function(xhr, promise, headers, method) {
+    _setStreamHeader = function(xhr /*, promise, headers, method */) {
         if (xhr._isStream && !xhr._isXDR) {
             console.log(NAME, '_setStreamHeader');
             xhr.setRequestHeader('X-Stream', 'true');
@@ -112,6 +123,8 @@ module.exports = function (window) {
     IO._xhrInitList.push(_readyHandleXDR);
     IO._xhrInitList.push(_progressHandle);
     IO._xhrInitList.push(_setStreamHeader);
+
+    window._ITSAmodules.IO_Stream = IO;
 
     return IO;
 };
