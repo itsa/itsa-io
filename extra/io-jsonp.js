@@ -22,11 +22,13 @@
 // var NAME = '[io-jsonp]: ',
 // var idgenerator = require('utils').idgenerator;
 
+require('js-ext/lib/object.js');
+
 module.exports = function (window) {
 
     var IO = require('../io.js')(window);
 
-    window._ITSAmodules || window.protectedProp('_ITSAmodules', {});
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', {});
 
     if (window._ITSAmodules.IO_JSONP) {
         return IO; // IO_JSONP was already created

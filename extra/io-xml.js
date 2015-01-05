@@ -25,7 +25,7 @@ var NAME = '[io-xml]: ',
 
 module.exports = function (window) {
 
-    window._ITSAmodules || window.protectedProp('_ITSAmodules', {});
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', {});
 
     if (window._ITSAmodules.IO_XML) {
         return window._ITSAmodules.IO_XML; // IO_XML was already created
