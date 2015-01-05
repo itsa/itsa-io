@@ -19,6 +19,7 @@
 */
 
 require('js-ext/lib/string.js');
+require('js-ext/lib/object.js');
 require('polyfill/polyfill-base.js');
 
 var NAME = '[io-transfer]: ',
@@ -34,7 +35,7 @@ var NAME = '[io-transfer]: ',
 
 module.exports = function (window) {
 
-    window._ITSAmodules || window.protectedProp('_ITSAmodules', {});
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', {});
 
     if (window._ITSAmodules.IO_Transfer) {
         return window._ITSAmodules.IO_Transfer; // IO_Transfer was already created

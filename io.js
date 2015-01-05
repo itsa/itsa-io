@@ -40,7 +40,7 @@ module.exports = function (window) {
     // into some other IO-instance than which is used.
     var Glob = (typeof global !== 'undefined' ? global : /* istanbul ignore next */ this);
 
-    Glob._ITSAmodules || Glob.protectedProp('_ITSAmodules', {});
+    Glob._ITSAmodules || Object.protectedProp(Glob, '_ITSAmodules', {});
 
     if (Glob._ITSAmodules.IO) {
         return Glob._ITSAmodules.IO;

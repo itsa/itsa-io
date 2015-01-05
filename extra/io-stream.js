@@ -1,11 +1,13 @@
 "use strict";
 
+require('js-ext/lib/object.js');
+
 var NAME = '[io-stream]: ',
     UNKNOW_ERROR = 'Unknown XDR-error'; // XDR doesn't specify the error
 
 module.exports = function (window) {
 
-    window._ITSAmodules || window.protectedProp('_ITSAmodules', {});
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', {});
 
     if (window._ITSAmodules.IO_Stream) {
         return window._ITSAmodules.IO_Stream; // IO_Stream was already created
