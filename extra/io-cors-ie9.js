@@ -23,23 +23,24 @@
 require('js-ext/lib/object.js');
 
 var NAME = '[io-cors-ie9]: ',
+    createHashMap = require('js-ext/extra/hashmap.js').createMap,
     XmlDOMParser = require('xmldom').DOMParser,
     UNKNOW_ERROR = 'Unknown XDR-error', // XDR doesn't specify the error
     REGEXP_EXTRACT_URL = new RegExp("^((([a-z][a-z0-9-.]*):\/\/)?(([^\/?#:]+)(:(\\d+))?)?)?(\/?[a-z0-9-._~%!$&'()*+,;=@]+(\/[a-z0-9-._~%!$&'()*+,;=:@]+)*\/?|\/)?([#?](.*)|$)", "i"),
     currentDomain,
-    BODY_METHODS = {
+    BODY_METHODS = createHashMap({
         POST: 1,
         PUT: 1
-    },
-    VALID_XDR_METHODS = {
+    }),
+    VALID_XDR_METHODS = createHashMap({
         GET: 1,
         POST: 1
-    };
+    });
 
 
 module.exports = function (window) {
 
-    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', {});
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', createHashMap());
 
     if (window._ITSAmodules.IO_Cors) {
         return window._ITSAmodules.IO_Cors; // IO_Cors was already created

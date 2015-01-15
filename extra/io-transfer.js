@@ -23,6 +23,7 @@ require('js-ext/lib/object.js');
 require('polyfill/polyfill-base.js');
 
 var NAME = '[io-transfer]: ',
+    createHashMap = require('js-ext/extra/hashmap.js').createMap,
     REVIVER = function(key, value) {
         return ((typeof value==='string') && value.toDate()) || value;
     },
@@ -35,7 +36,7 @@ var NAME = '[io-transfer]: ',
 
 module.exports = function (window) {
 
-    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', {});
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', createHashMap());
 
     if (window._ITSAmodules.IO_Transfer) {
         return window._ITSAmodules.IO_Transfer; // IO_Transfer was already created

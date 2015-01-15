@@ -9,7 +9,7 @@
     	should = require('chai').should();
     require('js-ext');
 
-    var IO = require("../extra/io")(window),
+    var IO = require("../io")(window),
         URL = 'http://servercors.itsa.io/io/status',
         ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),
         ie = ieTest && ieTest[1],
