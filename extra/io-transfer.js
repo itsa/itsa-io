@@ -22,10 +22,29 @@ require('js-ext/lib/string.js');
 require('js-ext/lib/object.js');
 require('polyfill/polyfill-base.js');
 
+/*jshint proto:true */
 var NAME = '[io-transfer]: ',
     createHashMap = require('js-ext/extra/hashmap.js').createMap,
+    PROTO_SUPPORTED = !!Object.__proto__,
     REVIVER = function(key, value) {
         return ((typeof value==='string') && value.toDate()) || value;
+    },
+    REVIVER_PROTOTYPED = function(key, value, proto, parseProtoCheck, reviveDate) {
+        if (reviveDate && (typeof value==='string')) {
+            return value.toDate() || value;
+        }
+        if (!Object.isObject(value)) {
+            return value;
+        }
+        // only first level of objects can be given the specified prototype
+        if ((typeof parseProtoCheck === 'function') && !parseProtoCheck(value)) {
+            return value;
+        }
+        if (PROTO_SUPPORTED) {
+            value.__proto__ = proto;
+            return value;
+        }
+        return value.deepClone(null, proto);
     },
     MIME_JSON = 'application/json',
     CONTENT_TYPE = 'Content-Type',
@@ -33,6 +52,7 @@ var NAME = '[io-transfer]: ',
     REGEXP_ARRAY = /^( )*\[/,
     REGEXP_OBJECT = /^( )*{/,
     REGEXP_REMOVE_LAST_COMMA = /^(.*),( )*$/;
+/*jshint proto:false */
 
 module.exports = function (window) {
 
@@ -162,6 +182,10 @@ module.exports = function (window) {
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
+     *    @param [options.parseProto] {Object} to set the prototype of any object.
+     *    @param [options.parseProtoCheck] {Function} to determine in what case the specified `parseProto` should be set as the prototype.
+     *            The function accepts the `object` as argument and should return a trully value in order to set the prototype.
+     *            When not specified, `parseProto` will always be applied (if `parseProto`is defined)
      * @return {Promise}
      * on success:
         * Object received data
@@ -187,6 +211,9 @@ module.exports = function (window) {
                 console.log(NAME, 'read returns with: '+JSON.stringify(xhrResponse.responseText));
                 // xhrResponse.responseText should be 'application/json' --> if it is not,
                 // JSON.parse throws an error, but that's what we want: the Promise would reject
+                if (options.parseProto) {
+                    return JSON.parse(xhrResponse.responseText, REVIVER_PROTOTYPED.rbind(null, options.parseProto, options.parseProtoCheck, options.parseJSONDate));
+                }
                 return JSON.parse(xhrResponse.responseText, (options.parseJSONDate) ? REVIVER : null);
             }
         );
@@ -327,10 +354,12 @@ module.exports = function (window) {
      *    @param [options.headers] {Object} HTTP request headers.
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
+     *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
      * @return {Promise}
      * on success:
         * response {Object|String} any response you want the server to return.
-                   If the server send back a JSON-stringified object, it will be parsed to return as a full object
+                   If the server send back a JSON-stringified object,
+                   it will be parsed to return as a full object
                    You could set `options.parseJSONDate` true, it you want ISO8601-dates to be parsed as trully Date-objects
      * on failure an Error object
         * reason {Error}
@@ -398,9 +427,13 @@ module.exports = function (window) {
      *    @param [options.headers] {Object} HTTP request headers.
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
+     *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
      * @return {Promise}
      * on success:
-        * xhr {XMLHttpRequest|XDomainRequest} xhr-response
+        * response {Object|String} any response you want the server to return.
+                   If the server send back a JSON-stringified object,
+                   it will be parsed to return as a full object
+                   You could set `options.parseJSONDate` true, it you want ISO8601-dates to be parsed as trully Date-objects
      * on failure an Error object
         * reason {Error}
     */

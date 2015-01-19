@@ -23,7 +23,7 @@
 
     describe('io-transfer methods', function () {
 
-        this.timeout(5000);
+        this.timeout(10000);
 
         describe('data', function () {
             it('get', function () {
@@ -311,6 +311,70 @@
                     undefined,
                     done
                 );
+            });
+        });
+
+        describe('read with different prototype', function () {
+            it('read without parseProtoCheck', function (done) {
+                var differentProto = {
+                    a: 5
+                };
+                var io = IO.read(URL+'/extractdata',
+                                {id: 1},
+                                {
+                                    parseProto: differentProto
+                                }
+                         );
+                io.then(
+                    function(data) {
+                        expect(Object.getPrototypeOf(data)).to.be.eql(differentProto);
+                        done();
+                    }
+                ).catch(done);
+            });
+
+            it('read with verified parseProtoCheck', function (done) {
+                var differentProto = {
+                    a: 5
+                };
+                var io = IO.read(URL+'/extractdata',
+                                {id: 1},
+                                {
+                                    parseProto: differentProto,
+                                    parseProtoCheck: function(obj) {
+                                        // note: object.hasKey is made available by the module js-ext/lib/object.js
+                                        return obj.hasKey('id');
+                                    }
+                                }
+                         );
+                io.then(
+                    function(data) {
+                        expect(Object.getPrototypeOf(data)).to.be.eql(differentProto);
+                        done();
+                    }
+                ).catch(done);
+            });
+
+            it('read with unverified parseProtoCheck', function (done) {
+                var differentProto = {
+                    a: 5
+                };
+                var io = IO.read(URL+'/extractdata',
+                                {id: 1},
+                                {
+                                    parseProto: differentProto,
+                                    parseProtoCheck: function(obj) {
+                                        // note: object.hasKey is made available by the module js-ext/lib/object.js
+                                        return obj.hasKey('dummy');
+                                    }
+                                }
+                         );
+                io.then(
+                    function(data) {
+                        expect(Object.getPrototypeOf(data)).to.be.eql(Object.prototype);
+                        done();
+                    }
+                ).catch(done);
             });
         });
 
