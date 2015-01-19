@@ -11,7 +11,7 @@
 
     chai.use(require('chai-as-promised'));
 
-    var IO = require("../extra/io")(window),
+    var IO = require("../io")(window),
         URL = 'http://servercors.itsa.io/io',
         REG_APP_JSON = /^application\/json/,
         ieTest = window.navigator.userAgent.match(/MSIE (\d+)\./),

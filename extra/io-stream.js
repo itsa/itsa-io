@@ -3,11 +3,12 @@
 require('js-ext/lib/object.js');
 
 var NAME = '[io-stream]: ',
+    createHashMap = require('js-ext/extra/hashmap.js').createMap,
     UNKNOW_ERROR = 'Unknown XDR-error'; // XDR doesn't specify the error
 
 module.exports = function (window) {
 
-    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', {});
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', createHashMap());
 
     if (window._ITSAmodules.IO_Stream) {
         return window._ITSAmodules.IO_Stream; // IO_Stream was already created

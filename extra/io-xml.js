@@ -21,11 +21,12 @@
 require('js-ext');
 
 var NAME = '[io-xml]: ',
-    REGEXP_XML = /(?: )*(<\?xml (?:.)*\?>)(?: )*(<(?:\w)+>)/;
+    REGEXP_XML = /(?: )*(<\?xml (?:.)*\?>)(?: )*(<(?:\w)+>)/,
+    createHashMap = require('js-ext/extra/hashmap.js').createMap;
 
 module.exports = function (window) {
 
-    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', {});
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', createHashMap());
 
     if (window._ITSAmodules.IO_XML) {
         return window._ITSAmodules.IO_XML; // IO_XML was already created
