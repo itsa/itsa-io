@@ -295,9 +295,53 @@ module.exports = function (window) {
             });
 
             instance._initXHR(xhr, options, promise);
+
+            // to make any routine informed for the end of xhr:
+            promise.then(function() {
+                instance._final.forEach(function(finallySubscriber) {
+                    finallySubscriber(xhr);
+                });
+            });
+
             return promise;
+        },
+
+        /**
+         * Adds a subscriber to the finalization-cycle, which happens after the xhr finishes.
+         * Only gets invoked on fulfilled io.
+         *
+         * @method finalize
+         * @param finallySubscriber {Function} callback to be invoked
+         *        Function recieves `xhr` as its only argument
+         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+         * @since 0.0.1
+         */
+        finalize: function (finallySubscriber) {
+            console.log(NAME, 'finalize');
+            var finalHash = this._final;
+            finalHash.push(finallySubscriber);
+            return {
+                detach: function() {
+                    console.log(NAME, 'detach finalizer');
+                    var index = finalHash.indexOf(finallySubscriber);
+                    (index===-1) || finalHash.splice(index, 1);
+                }
+            };
         }
+
     };
+
+    /**
+     * Internal list of finalize-subscribers which are invoked at the end of a successful xhr,
+     * Is an array of function-references.
+     *
+     * @property _final
+     * @default []
+     * @type Array
+     * @private
+     * @since 0.0.1
+    */
+    Object.protectedProp(Event, '_final', []);
 
     IO._xhrInitList = [
         IO._setReadyHandle,
