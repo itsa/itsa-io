@@ -36,21 +36,21 @@ var NAME = '[io]: ',
 
 module.exports = function (window) {
 
+    var ENCODE_URI_COMPONENT = encodeURIComponent,
+        IO;
+
     // to prevent multiple IO instances
     // (which might happen: http://nodejs.org/docs/latest/api/modules.html#modules_module_caching_caveats)
     // we make sure IO is defined only once. Therefore we bind it to `window` and return it if created before
     // We need a singleton IO, because submodules might merge in. You can't have them merging
     // into some other IO-instance than which is used.
-    var Glob = (typeof global !== 'undefined' ? global : /* istanbul ignore next */ this);
 
-    Glob._ITSAmodules || Object.protectedProp(Glob, '_ITSAmodules', createHashMap());
-
-    if (Glob._ITSAmodules.IO) {
-        return Glob._ITSAmodules.IO;
+    window._ITSAmodules || Object.protectedProp(window, '_ITSAmodules', createHashMap());
+/*jshint boss:true */
+    if (IO=window._ITSAmodules.IO) {
+/*jshint boss:false */
+        return IO; // IO was already created
     }
-
-    var ENCODE_URI_COMPONENT = encodeURIComponent,
-        IO;
 
     IO = {
         config: {},
@@ -317,7 +317,7 @@ module.exports = function (window) {
         IO._setHeaders
     ];
 
-    Glob._ITSAmodules.IO = IO;
+    window._ITSAmodules.IO = IO;
 
     return IO;
 };
