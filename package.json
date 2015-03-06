@@ -26,6 +26,7 @@
     },
     "dependencies": {
         "polyfill": "itsa/polyfill",
+        "event": "itsa/event",
         "js-ext": "itsa/js-ext",
         "utils": "itsa/utils",
         "xmldom": "^0.1.19",
