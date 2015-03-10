@@ -26,7 +26,7 @@
     },
     "dependencies": {
         "polyfill": "itsa/polyfill",
-        "event": "itsa/event",
+        "messages": "itsa/messages",
         "js-ext": "itsa/js-ext",
         "utils": "itsa/utils",
         "xmldom": "^0.1.19",
