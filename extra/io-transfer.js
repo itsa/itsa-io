@@ -25,6 +25,7 @@ require('polyfill/polyfill-base.js');
 /*jshint proto:true */
 var NAME = '[io-transfer]: ',
     createHashMap = require('js-ext/extra/hashmap.js').createMap,
+    messages = require('messages'),
     PROTO_SUPPORTED = !!Object.__proto__,
     REVIVER = function(key, value) {
         return ((typeof value==='string') && value.toDate()) || value;
@@ -51,7 +52,16 @@ var NAME = '[io-transfer]: ',
     DELETE = 'delete',
     REGEXP_ARRAY = /^( )*\[/,
     REGEXP_OBJECT = /^( )*{/,
-    REGEXP_REMOVE_LAST_COMMA = /^(.*),( )*$/;
+    REGEXP_REMOVE_LAST_COMMA = /^(.*),( )*$/,
+    SPINNER_ICON = 'spinnercircle-anim',
+    MIN_SHOWUP = 500,
+    MESSAGES = {
+        'read': 'reading...',
+        'update': 'saving...',
+        'insert': 'saving...',
+        'send': 'sending...',
+        'delete': 'saving...'
+    };
 /*jshint proto:false */
 
 module.exports = function (window) {
@@ -137,7 +147,7 @@ module.exports = function (window) {
     */
     IO.get = function (url, options) {
         console.log(NAME, 'get --> '+url);
-        var ioPromise, returnPromise;
+        var ioPromise, returnPromise, message;
         options || (options={});
         options.url = url;
         options.method = 'GET';
@@ -151,6 +161,10 @@ module.exports = function (window) {
         );
         // set `abort` to the thennable-promise:
         returnPromise.abort = ioPromise.abort;
+        message = messages.message(MESSAGES.read, {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
+        returnPromise.finally(function() {
+            message.fulfill();
+        });
         return returnPromise;
     };
 
@@ -194,7 +208,7 @@ module.exports = function (window) {
     */
     IO.read = function(url, params, options) {
         console.log(NAME, 'read  --> '+url+' params: '+JSON.stringify(params));
-        var ioPromise, returnPromise;
+        var ioPromise, returnPromise, message;
         options || (options={});
         options.headers || (options.headers={});
         options.url = url;
@@ -219,6 +233,10 @@ module.exports = function (window) {
         );
         // set `abort` to the thennable-promise:
         returnPromise.abort = ioPromise.abort;
+        message = messages.message(MESSAGES.read, {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
+        returnPromise.finally(function() {
+            message.fulfill();
+        });
         return returnPromise;
     };
 
@@ -370,7 +388,7 @@ module.exports = function (window) {
             IO[verb] = function (url, data, options) {
                 console.log(NAME, verb+' --> '+url+' data: '+JSON.stringify(data));
                 var instance = this,
-                    allfields, useallfields, parseJSONDate, ioPromise, returnPromise;
+                    allfields, useallfields, parseJSONDate, ioPromise, returnPromise, message;
                 options || (options={});
                 allfields = options.allfields,
                 useallfields = (typeof allfields==='boolean') ? allfields : (verb!=='insert');
@@ -402,6 +420,10 @@ module.exports = function (window) {
                 );
                 // set `abort` to the thennable-promise:
                 returnPromise.abort = ioPromise.abort;
+                message = messages.message(MESSAGES[verb], {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
+                returnPromise.finally(function() {
+                    message.fulfill();
+                });
                 return returnPromise;
             };
         }
@@ -440,7 +462,7 @@ module.exports = function (window) {
 
     IO[DELETE] = function (url, deleteKey, options) {
         console.log(NAME, 'delete --> '+url+' deleteKey: '+JSON.stringify(deleteKey));
-        var ioPromise, returnPromise;
+        var ioPromise, returnPromise, message;
         options || (options={});
         options.url = url;
         // method will be uppercased by IO.xhr
@@ -460,6 +482,10 @@ module.exports = function (window) {
         );
         // set `abort` to the thennable-promise:
         returnPromise.abort = ioPromise.abort;
+        message = messages.message(MESSAGES['delete'], {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
+        returnPromise.finally(function() {
+            message.fulfill();
+        });
         return returnPromise;
     };
 

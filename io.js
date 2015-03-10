@@ -17,8 +17,6 @@ require('js-ext');
 var NAME = '[io]: ',
     GET = 'GET',
     createHashMap = require('js-ext/extra/hashmap.js').createMap,
-    Event = require('event'),
-    async = require('utils').async,
     DEF_REQ_TIMEOUT = 300000, // don't create an ever-lasting request: always quit after 5 minutes
     BODY_METHODS = createHashMap({
         POST: 1,
@@ -297,15 +295,6 @@ module.exports = function (window) {
             });
 
             instance._initXHR(xhr, options, promise);
-
-            // to make any routine informed for the end of xhr, we emit an event
-            // to make sure they get informed after another routines have handled the response,
-            // we go async
-            promise.then(function() {
-                async(function() {
-                    Event.emit(promise, 'IO:finish');
-                });
-            });
 
             return promise;
         }
