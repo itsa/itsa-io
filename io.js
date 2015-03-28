@@ -17,6 +17,7 @@ require('js-ext');
 var NAME = '[io]: ',
     GET = 'GET',
     createHashMap = require('js-ext/extra/hashmap.js').createMap,
+    REDIRECT_STATUS = 302,
     DEF_REQ_TIMEOUT = 300000, // don't create an ever-lasting request: always quit after 5 minutes
     BODY_METHODS = createHashMap({
         POST: 1,
@@ -200,7 +201,16 @@ module.exports = function (window) {
                         if (xhr._isStream && !xhr._gotstreamed) {
                             xhr.onprogress(xhr.responseText);
                         }
-                        promise.fulfill(xhr);
+
+                        // in case of statuscode=302, there was a redirect initiated
+                        // we need to reload the window -location in those cases
+                        // and don't fulfill the promise: read the header response `location`
+                        if (xhr.status===REDIRECT_STATUS) {
+                            window.location = xhr.getResponseHeader('location');
+                        }
+                        else {
+                            promise.fulfill(xhr);
+                        }
                     }
                     else {
                         console.warn(NAME, 'xhr.onreadystatechange will reject xhr-instance: '+xhr.statusText);
