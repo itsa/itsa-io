@@ -139,6 +139,7 @@ module.exports = function (window) {
      *    @param [options.responseType] {String} Force the response type.
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
+     *    @param [options.preventCache=false] {boolean} whether to prevent caching --> a timestamp is added by parameter _ts
      * @return {Promise}
      * on success:
         * xhr {XMLHttpRequest|XDomainRequest} xhr-response
@@ -153,6 +154,9 @@ module.exports = function (window) {
         options.method = 'GET';
         // delete hidden property `data`: don't want accedentially to be used
         delete options.data;
+        if (options.preventCache) {
+            url += (url.contains('?') ? '&' : '?') + '_ts=' + Date.now();
+        }
         ioPromise = this.request(options);
         returnPromise = ioPromise.then(
             function(xhrResponse) {

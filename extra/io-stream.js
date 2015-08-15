@@ -20,7 +20,7 @@ module.exports = function (window) {
      * Adds properties to the xhr-object: in case of streaming,
      * xhr._isStream is set and xhr._isXDR might be set in case of IE<10
      *
-     * @method _progressHandle
+     * @method _entendXHR
      * @param xhr {Object} containing the xhr-instance
      * @param props {Object} the propertie-object that is added too xhr and can be expanded
      * @param options {Object} options of the request
@@ -102,7 +102,7 @@ module.exports = function (window) {
     /**
      * Adds a `headers` X-Stream=true in case of a streaming request.
      *
-     * @method _setHeaders
+     * @method _setStreamHeader
      * @param xhr {Object} containing the xhr-instance
      * @param headers {Object} containing all headers
      * @param method {String} the request-method used

@@ -24,6 +24,8 @@ var NAME = '[io]: ',
     }),
     CONTENT_TYPE = 'Content-Type',
     MIME_JSON = 'application/json',
+    MIME_BLOB = 'application/octet-stream',
+    MIME_URLENCODED = 'application/x-www-form-urlencoded',
     DEF_CONTENT_TYPE_POST = 'application/x-www-form-urlencoded; charset=UTF-8',
     ERROR_NO_XHR = 'no valid xhr transport-mechanism available',
     REQUEST_TIMEOUT = 'Request-timeout',
@@ -35,7 +37,7 @@ var NAME = '[io]: ',
 module.exports = function (window) {
 
     var ENCODE_URI_COMPONENT = encodeURIComponent,
-        IO;
+        IO, xhrTest;
 
     // to prevent multiple IO instances
     // (which might happen: http://nodejs.org/docs/latest/api/modules.html#modules_module_caching_caveats)
@@ -89,7 +91,8 @@ module.exports = function (window) {
                 headers = options.headers || {}, // all request will get some headers
                 async = !options.sync,
                 data = options.data,
-                reject = promise.reject;
+                reject = promise.reject,
+                sendPayload;
             // xhr will be null in case of a CORS-request when no CORS is possible
             if (!xhr) {
                 console.error(NAME, '_initXHR fails: '+ERROR_NO_XHR);
@@ -100,14 +103,14 @@ module.exports = function (window) {
 
             // method-name should be in uppercase:
             method = method.toUpperCase();
-
+console.info('contenttype: '+headers[CONTENT_TYPE]);
             // in case of BODY-method: eliminate any data behind querystring:
             // else: append data-object behind querystring
             if (BODY_METHODS[method]) {
                 url = url.split('?'); // now url is an array
                 url = url[0]; // now url is a String again
             }
-            else if (data) {
+            else if (data && (headers[CONTENT_TYPE]!==MIME_BLOB)) {
                 url += ((url.indexOf('?') > 0) ? '&' : '?') + instance._toQueryString(data);
             }
 
@@ -123,8 +126,18 @@ module.exports = function (window) {
                 }
             );
 
+            if (BODY_METHODS[method] && data) {
+                if (headers[CONTENT_TYPE]===MIME_BLOB) {
+                    if (!xhr._isXDR) {
+                        sendPayload = data;
+                    }
+                }
+                else {
+                    sendPayload = ((headers[CONTENT_TYPE]===MIME_JSON) || xhr._isXDR) ? JSON.stringify(data) : instance._toQueryString(data);
+                }
+            }
             // send the request:
-            xhr.send((BODY_METHODS[method] && data) ? (((headers[CONTENT_TYPE]===MIME_JSON) || xhr._isXDR) ? JSON.stringify(data) : instance._toQueryString(data)) : null);
+            xhr.send(sendPayload);
 
             console.log(NAME, 'xhr send to '+url+' with method '+method);
 
@@ -200,11 +213,18 @@ module.exports = function (window) {
                         if (xhr._isStream && !xhr._gotstreamed) {
                             xhr.onprogress(xhr.responseText);
                         }
+                        if (xhr._fileProgress && !xhr._gotstreamed) {
+                            xhr.onprogress({
+                                lengthComputable: true,
+                                loaded: 1,
+                                total: 1
+                            });
+                        }
                         promise.fulfill(xhr);
                     }
                     else {
                         console.warn(NAME, 'xhr.onreadystatechange will reject xhr-instance: '+xhr.statusText);
-                        promise.reject(new Error(xhr.statusText || UNKNOW_ERROR+' '+xhr.status));
+                        promise.reject(new Error(xhr.statusText || (UNKNOW_ERROR+' '+xhr.status)));
                     }
                 }
             };
@@ -266,7 +286,7 @@ module.exports = function (window) {
             promise = Promise.manage(options.streamback);
 
             xhr = new window.XMLHttpRequest();
-            props._isXHR2 = ('withCredentials' in xhr) || (window.navigator.userAgent==='fake');
+            props._isXHR2 = IO.xhr2support;
             // it could be other modules like io-cors or io-stream have subscribed
             // xhr might be changed, also private properties might be extended
             instance._xhrList.each(
@@ -305,6 +325,10 @@ module.exports = function (window) {
         IO._setReadyHandle,
         IO._setHeaders
     ];
+
+    // search for XHR2 support:
+    xhrTest = new window.XMLHttpRequest();
+    IO.supportXHR2 = ('withCredentials' in xhrTest) || (window.navigator.userAgent==='fake');
 
     window._ITSAmodules.IO = IO;
 
