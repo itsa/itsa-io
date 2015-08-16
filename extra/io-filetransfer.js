@@ -20,6 +20,7 @@ var NAME = '[io-filetransfer]: ',
         'delete': 'saving...'
     },
     ABORTED = 'Request aborted',
+    ACRH = 'access-control-request-headers',
     KB_25 = 25 * 1024, // 25kb
     KB_100 = 100 * 1024, // 100kb
     KB_256 = 256 * 1024, // 256kb
@@ -60,7 +61,7 @@ module.exports = function (window) {
     };
 
     /**
-     * Performs an AJAX PUT request.
+     * Sends a `blob` by using an AJAX PUT request.
      * Additional parameters can be through the `params` argument.
      *
      * The Promise gets fulfilled if the server responses with `STATUS-CODE` in the 200-range (excluded 204).
@@ -71,7 +72,7 @@ module.exports = function (window) {
      * @method sendBlob
      * @param url {String} URL of the resource server
      * @param blob {blob} blob (data) representing the file to be send. Typically `HTMLInputElement.files[0]`
-     * @param [params] {Object} additional parameters. NOTE: these will be set as HEADERS like `X-Data-parameter` on the request!
+     * @param [params] {Object} additional parameters. NOTE: these will be set as HEADERS like `x-data-parameter` on the request!
      *        should be a plain object with only primitive types which are transformed into key/value pairs.
      * @param [options] {Object}
      *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
@@ -80,7 +81,7 @@ module.exports = function (window) {
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      * @return {Promise}
      * on success:
-        * xhr {XMLHttpRequest|XDomainRequest} xhr-response
+        * Object any received data
      * on failure an Error object
         * reason {Error}
     */
@@ -92,7 +93,7 @@ module.exports = function (window) {
             i = 0,
             totalLoaded = 0,
             chunkSize, end, size, returnPromise, message, filename,
-            ioPromise, partialSize, notifyResolved;
+            ioPromise, partialSize, notifyResolved, hashPromise, responseObject, setXHR;
         if (!IO.supportXHR2) {
             return Promise.reject('This browser does not support fileupload');
         }
@@ -110,6 +111,27 @@ module.exports = function (window) {
             });
         };
 
+        setXHR = function(xhr) {
+            var response = xhr.responseText;
+            try {
+                response = window.JSON.parse(response);
+            }
+            catch(err) {
+                response = {};
+                console.warn(err);
+            }
+            response.status && (response.status=response.status.toLowerCase());
+            if (response.status!=='busy') {
+                try {
+                    responseObject = window.JSON.parse(xhr.responseText);
+                }
+                catch(err) {
+                    console.warn(err);
+                    responseObject = {};
+                }
+            }
+        };
+
         options || (options={});
         returnPromise = Promise.manage(options.streamback);
 
@@ -118,9 +140,12 @@ module.exports = function (window) {
             size = blob.size;
 
             options.headers || (options.headers={});
+            // allow x-transfered to be set in case of cors:
             if (typeof params==='object') {
                 params.each(function(value, key) {
-                    options.headers['X-Data-'+key] = String(value);
+                    var header = 'x-data-'+key;
+                    options.headers[header] = String(value);
+                    options.headers[ACRH] = options.headers[ACRH]+','+header.toLowerCase();
                 });
             }
             options.url = url;
@@ -128,6 +153,7 @@ module.exports = function (window) {
             // options.headers[CONTENT_TYPE] = blob.type || MIME_BLOB;
             options.headers['X-TransId'] = idGenerator(GENERATOR_ID);
             options.headers['X-ClientId'] = clientId;
+
             options.headers[CONTENT_TYPE] = MIME_BLOB;
             options.url = url;
             options.data = blob;
@@ -159,11 +185,14 @@ module.exports = function (window) {
     //upload the fragment to the server
                 ioPromise = instance.request(options);
                 options.streamback && notifyResolved(ioPromise, partialSize);
-                ioHash.push(ioPromise);
+                // we need to inspect the response for status==='busy' to know which promise holds the final
+                // value and should be used as the returnvalue. Therefore, create `hashPromise`
+                hashPromise = ioPromise.then(setXHR);
+                ioHash.push(hashPromise);
             }
 
             Promise.all(ioHash).then(function() {
-                returnPromise.fulfill({status: 'OK'});
+                returnPromise.fulfill(responseObject);
             });
         });
 
@@ -182,10 +211,30 @@ module.exports = function (window) {
     };
 
     /**
-    * Determines the number of transitionend-events there will occur
-    * @method _getEvtTransEndCount
-    * @private
-    * @since 0.0.1
+     * Sends the input's files by using an AJAX PUT request.
+     * Additional parameters can be through the `params` argument.
+     *
+     * The Promise gets fulfilled if the server responses with `STATUS-CODE` in the 200-range (excluded 204).
+     * It will be rejected if a timeout occurs (see `options.timeout`), or if `xhr.abort()` gets invoked.
+     *
+     * Note: `params` should be a plain object with only primitive types which are transformed into key/value pairs.
+     *
+     * @for HTMLInputElement
+     * @method sendFiles
+     * @param url {String} URL of the resource server
+     * @param [params] {Object} additional parameters. NOTE: these will be set as HEADERS like `x-data-parameter` on the request!
+     *        should be a plain object with only primitive types which are transformed into key/value pairs.
+     * @param [options] {Object}
+     *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
+     *    @param [options.headers] {Object} HTTP request headers.
+     *    @param [options.timeout=60000] {Number} to timeout the request, leading into a rejected Promise.
+     *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
+     * @return {Promise}
+     * on success:
+        * Object any received data
+     * on failure an Error object
+        * reason {Error}
+     * The returned promise has an `abort`-method to cancel all transfers.
     */
     window.HTMLInputElement.prototype.sendFiles = function(url, params, options) {
         var instance = this,
@@ -193,7 +242,11 @@ module.exports = function (window) {
             len = files.length,
             hash = [],
             promise, file, i;
-        if (len>0) {
+        if (len===1) {
+            file = files[0];
+            return IO.sendBlob(url, file, params, options);
+        }
+        else if (len>1) {
             // files is array-like, no true array
             for (i=0; i<len; i++) {
                 file = files[i];
