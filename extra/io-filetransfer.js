@@ -72,7 +72,7 @@ module.exports = function (window) {
      * @method sendBlob
      * @param url {String} URL of the resource server
      * @param blob {blob} blob (data) representing the file to be send. Typically `HTMLInputElement.files[0]`
-     * @param [params] {Object} additional parameters. NOTE: these will be set as HEADERS like `x-data-parameter` on the request!
+     * @param [params] {Object} additional parameters. NOTE: this object will be `stringified` set a HEADER: `x-data` on the request!
      *        should be a plain object with only primitive types which are transformed into key/value pairs.
      * @param [options] {Object}
      *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
@@ -142,11 +142,8 @@ module.exports = function (window) {
             options.headers || (options.headers={});
             // allow x-transfered to be set in case of cors:
             if (typeof params==='object') {
-                params.each(function(value, key) {
-                    var header = 'x-data-'+key;
-                    options.headers[header] = String(value);
-                    options.headers[ACRH] = options.headers[ACRH]+','+header.toLowerCase();
-                });
+                options.headers['x-data'] = window.JSON.stringify(params);
+                options.headers[ACRH] = options.headers[ACRH]+',x-data';
             }
             options.url = url;
             options.method || (options.method='PUT');
