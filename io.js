@@ -103,7 +103,6 @@ module.exports = function (window) {
 
             // method-name should be in uppercase:
             method = method.toUpperCase();
-console.info('contenttype: '+headers[CONTENT_TYPE]);
             // in case of BODY-method: eliminate any data behind querystring:
             // else: append data-object behind querystring
             if (BODY_METHODS[method]) {
