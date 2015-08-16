@@ -11,6 +11,9 @@ var NAME = '[io-filetransfer]: ',
     idGenerator = require('utils').idGenerator,
     SPINNER_ICON = 'spinnercircle-anim',
     MIN_SHOWUP = 500,
+    REVIVER = function(key, value) {
+        return ((typeof value==='string') && value.toDate()) || value;
+    },
     messages = require('messages'),
     MESSAGES = {
         'read': 'reading...',
@@ -79,6 +82,7 @@ module.exports = function (window) {
      *    @param [options.headers] {Object} HTTP request headers.
      *    @param [options.timeout=60000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
+     *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
      * @return {Promise}
      * on success:
         * Object any received data
@@ -112,9 +116,10 @@ module.exports = function (window) {
         };
 
         setXHR = function(xhr) {
-            var response = xhr.responseText;
+            var responseText = xhr.responseText,
+                response;
             try {
-                response = window.JSON.parse(response);
+                response = window.JSON.parse(responseText); // no reviver, we are only interested in the `status` property
             }
             catch(err) {
                 response = {};
@@ -122,12 +127,17 @@ module.exports = function (window) {
             }
             response.status && (response.status=response.status.toLowerCase());
             if (response.status!=='busy') {
-                try {
-                    responseObject = window.JSON.parse(xhr.responseText);
+                if (options.parseJSONDate) {
+                    try {
+                        responseObject = window.JSON.parse(responseText, REVIVER);
+                    }
+                    catch(err) {
+                        console.warn(err);
+                        responseObject = {};
+                    }
                 }
-                catch(err) {
-                    console.warn(err);
-                    responseObject = {};
+                else {
+                    responseObject = response;
                 }
             }
         };
@@ -140,11 +150,6 @@ module.exports = function (window) {
             size = blob.size;
 
             options.headers || (options.headers={});
-            // allow x-transfered to be set in case of cors:
-            if (typeof params==='object') {
-                options.headers['x-data'] = window.JSON.stringify(params);
-                options.headers[ACRH] = options.headers[ACRH]+',x-data';
-            }
             options.url = url;
             options.method || (options.method='PUT');
             // options.headers[CONTENT_TYPE] = blob.type || MIME_BLOB;
@@ -177,6 +182,10 @@ module.exports = function (window) {
                 if (start>=size) {
                     // set the filename on the last request:
                     options.headers['X-Filename'] = filename;
+                    if (typeof params==='object') {
+                        options.headers['x-data'] = window.JSON.stringify(params);
+                        options.headers[ACRH] = options.headers[ACRH]+',x-data';
+                    }
                     partialSize = (size % chunkSize) || chunkSize;
                 }
     //upload the fragment to the server
@@ -226,6 +235,7 @@ module.exports = function (window) {
      *    @param [options.headers] {Object} HTTP request headers.
      *    @param [options.timeout=60000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
+     *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
      * @return {Promise}
      * on success:
         * Object any received data
