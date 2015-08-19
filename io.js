@@ -25,11 +25,10 @@ var NAME = '[io]: ',
     CONTENT_TYPE = 'Content-Type',
     MIME_JSON = 'application/json',
     MIME_BLOB = 'application/octet-stream',
-    MIME_URLENCODED = 'application/x-www-form-urlencoded',
     DEF_CONTENT_TYPE_POST = 'application/x-www-form-urlencoded; charset=UTF-8',
     ERROR_NO_XHR = 'no valid xhr transport-mechanism available',
     REQUEST_TIMEOUT = 'Request-timeout',
-    UNKNOW_ERROR = 'Unknown response-error',
+    UNKNOW_ERROR = 'Network error',
     XHR_ERROR = 'XHR Error',
     ABORTED = 'Request aborted',
     NO_XHR = 'No valid xhr found on this browser';
@@ -103,7 +102,6 @@ module.exports = function (window) {
 
             // method-name should be in uppercase:
             method = method.toUpperCase();
-console.info('contenttype: '+headers[CONTENT_TYPE]);
             // in case of BODY-method: eliminate any data behind querystring:
             // else: append data-object behind querystring
             if (BODY_METHODS[method]) {
@@ -224,7 +222,7 @@ console.info('contenttype: '+headers[CONTENT_TYPE]);
                     }
                     else {
                         console.warn(NAME, 'xhr.onreadystatechange will reject xhr-instance: '+xhr.statusText);
-                        promise.reject(new Error(xhr.statusText || (UNKNOW_ERROR+' '+xhr.status)));
+                        promise.reject(new Error(xhr.statusText || (UNKNOW_ERROR)));
                     }
                 }
             };
@@ -282,7 +280,7 @@ console.info('contenttype: '+headers[CONTENT_TYPE]);
             var instance = this,
                 props = {},
                 xhr, promise;
-            options || (options={});
+            options = Object.isObject(options) ? options.deepClone() : {};
             promise = Promise.manage(options.streamback);
 
             xhr = new window.XMLHttpRequest();
