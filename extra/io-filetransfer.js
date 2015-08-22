@@ -1,5 +1,21 @@
 "use strict";
 
+/**
+ * Extends io by adding the method `sendBlob` to it.
+ *
+ * @example
+ * var IO = require("io/extra/io-filetransfer.js")(window);
+ *
+ *
+ * <i>Copyright (c) 2015 ITSA - https://github.com/itsa</i>
+ * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+ *
+ * @module io
+ * @submodule io-filetransfer
+ * @class IO
+ * @since 0.0.1
+*/
+
 require('js-ext/lib/object.js');
 require('js-ext/lib/promise.js');
 
@@ -8,9 +24,7 @@ var NAME = '[io-filetransfer]: ',
     MIME_BLOB = 'application/octet-stream',
     CONTENT_TYPE = 'Content-Type',
     createHashMap = require('js-ext/extra/hashmap.js').createMap,
-    utils = require('utils'),
-    idGenerator = utils.idGenerator,
-    later = utils.later,
+    idGenerator = require('utils').idGenerator,
     SPINNER_ICON = 'spinnercircle-anim',
     DEFAULT_TIMEOUT = 300000, // 5 minutes
     MIN_SHOWUP = 500,
@@ -42,7 +56,7 @@ module.exports = function (window) {
     }
 
     var IO = require('../io.js')(window),
-        clientIdPromise, _entendXHR, _progressHandle;
+        clientIdPromiseOriginal, clientIdPromise, _entendXHR, _progressHandle;
 
     window._ITSAmodules.IO_Filetransfer = IO;
 
@@ -85,11 +99,23 @@ module.exports = function (window) {
         }
     },
 
-
-
+    /**
+     * Is send to the server and expects an unique id which can be used for its file-transactions.
+     *
+     * @method _getClientId
+     * @private
+     * @param url {String} URL of the resource server
+     * @return {Promise}
+     * on success:
+        * Unique clientId
+     * on failure an Error object
+        * reason {Error}
+    */
     IO._getClientId = function(url) {
         var options;
-        if (clientIdPromise) {
+        // check for existance, but also if it was not rejected --> in that case we need to reactivate
+        // (the server might have been coming up again)
+        if (clientIdPromiseOriginal && !clientIdPromiseOriginal.isRejected()) {
             return clientIdPromise;
         }
         options = {
@@ -99,10 +125,12 @@ module.exports = function (window) {
                 ts: Date.now() // prevent caching
             }
         };
-        clientIdPromise = this.request(options).then(function(xhrResponse) {
+        clientIdPromiseOriginal = this.request(options);
+        clientIdPromise = clientIdPromiseOriginal.then(function(xhrResponse) {
             return xhrResponse.responseText;
         }).catch(function(err) {
             console.warn(err);
+            throw new Error(err);
         });
         return clientIdPromise;
     };
@@ -154,6 +182,8 @@ module.exports = function (window) {
             return Promise.reject('No valid url specified');
         }
 
+        // send a notification to `progressfn` whenever a chunk gets intermediate update
+        // by `xhr.upload.onprogress`
         notify = function() {
             var len = promiseHash.length,
                 totalLoaded = 0,
@@ -169,6 +199,7 @@ module.exports = function (window) {
             });
         };
 
+        // send a notification to `progressfn` whenever a chunk finishes
         notifyResolved = function(promise, loaded) {
             promise.then(function() {
                 promise._loaded = loaded;
@@ -176,6 +207,8 @@ module.exports = function (window) {
             });
         };
 
+        // sets the `right` xhr in the returned promise. That is: the server-response that holds the final data
+        // and not the intermediate response.
         setXHR = function(xhr) {
             var responseText = xhr.responseText,
                 response;
@@ -247,7 +280,7 @@ module.exports = function (window) {
             end = chunkSize;
             partialSize = chunkSize;
             while (start < size) {
-    //push the fragments to an array
+                //push the fragments to an array
                 options.data = blob.slice(start, end);
 
                 start = end;
@@ -256,11 +289,11 @@ module.exports = function (window) {
                 options.headers = headers.deepClone();
                 if (start>=size) {
                     // set the filename on the last request:
-                    options.headers['X-Filename'] = filename;
+                    options.headers['X-Filename'] = filename || 'blob';
                     Object.isObject(params) && (options.headers['x-data']=JSON.stringify(params));
                     partialSize = (size % chunkSize) || chunkSize;
                 }
-    //upload the fragment to the server
+                //upload the fragment to the server:
                 ioPromise = instance.request(options);
                 if (options.progressfn) {
                     ioPromise._notify = notify;
@@ -290,109 +323,12 @@ module.exports = function (window) {
             });
             returnPromise.reject(new Error(ABORTED));
         };
+        // send a message to ITSA's the Message's system so that any statusbar can show a spinner - if it wants to:
         message = messages.message(MESSAGES.send, {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
         returnPromise.finally(function() {
             message.fulfill();
         });
         return returnPromise;
-    };
-
-    /**
-     * Sends the input's files by using an AJAX PUT request.
-     * Additional parameters can be through the `params` argument.
-     *
-     * The Promise gets fulfilled if the server responses with `STATUS-CODE` in the 200-range (excluded 204).
-     * It will be rejected if a timeout occurs (see `options.timeout`), or if `xhr.abort()` gets invoked.
-     *
-     * Note: `params` should be a plain object with only primitive types which are transformed into key/value pairs.
-     *
-     * @for HTMLInputElement
-     * @method sendFiles
-     * @param url {String} URL of the resource server
-     * @param [params] {Object} additional parameters. NOTE: these will be set as HEADERS like `x-data-parameter` on the request!
-     *        should be a plain object with only primitive types which are transformed into key/value pairs.
-     * @param [options] {Object}
-     *    @param [options.sync=false] {boolean} By default, all requests are sent asynchronously. To send synchronous requests, set to true.
-     *    @param [options.headers] {Object} HTTP request headers.
-     *    @param [options.timeout=300000] {Number} to timeout the request, leading into a rejected Promise. Defaults to 5 minutes
-     *    @param [options.progressfn] {Function} callbackfunction in case you want to process upload-status.
-     *           Function has 3 parameters: total, loaded and target (io-promise)
-     *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
-     *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
-     *    @param [options.emptyFiles=true] {boolean} Whether the empty the inputElement after transmitting has completed
-     * @return {Promise}
-     * on success:
-        * Object any received data
-     * on failure an Error object
-        * reason {Error}
-     * The returned promise has an `abort`-method to cancel all transfers.
-    */
-    window.HTMLInputElement.prototype.sendFiles = function(url, params, options) {
-        var instance = this,
-            files = instance.files,
-            len = files.length,
-            hash = [],
-            promisesById = {},
-            promise, ioPromise, file, i, totalsize, originalProgressFn;
-        options || (options={});
-        (typeof options.emptyFiles==='boolean') || (options.emptyFiles=true);
-        if (len===1) {
-            file = files[0];
-            promise = IO.sendBlob(url, file, params, options);
-        }
-        else if (len>1) {
-            if (options.progressfn) {
-                totalsize = 0;
-                originalProgressFn = options.progressfn;
-                options.progressfn = function(data) {
-                    var promiseInstance = data.target,
-                        totalLoaded = 0;
-                    promisesById[promiseInstance._id] = data.loaded;
-                    promisesById.each(function(value) {
-                        totalLoaded += value;
-                    });
-                    originalProgressFn({
-                        total: totalsize,
-                        loaded: totalLoaded,
-                        target: promise
-                    });
-                };
-            }
-            // files is array-like, no true array
-            for (i=0; i<len; i++) {
-                file = files[i];
-                ioPromise = IO.sendBlob(url, file, params, options);
-                // we are interested in the total size of ALL files
-                if (options.progressfn) {
-                    totalsize += file.size;
-                    ioPromise._id = i;
-                }
-                hash.push(ioPromise);
-            }
-            promise = window.Promise.finishAll(hash).then(function(response) {
-                var rejected = response.rejected;
-                rejected.forEach(function(ioError) {
-                    if (ioError) {
-                        throw new Error(ioError);
-                    }
-                });
-            });
-            promise.abort = function() {
-                hash.forEach(function(ioPromise) {
-                    ioPromise.abort();
-                });
-            };
-        }
-        else {
-            promise = Promise.reject('No files selected');
-        }
-        if (options.emptyFiles && (len>0)) {
-            // empty ON THE NEXT stack (not microstack), to ensure all previous methods are processing
-            later(function () {
-                instance.resetFileSelect();
-            }, 0);
-        }
-        return promise;
     };
 
     IO._xhrList.push(_entendXHR);

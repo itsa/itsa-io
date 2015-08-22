@@ -1,13 +1,11 @@
 "use strict";
 
 /**
- * Extends io by adding the method `readXML` to it.
- * Should be called using  the provided `mergeInto`-method like this:
+ * Extends io by adding the method `getCSS` and `getJS` to it.
+ * (under construction)
  *
  * @example
- * var IO = require("io");
- * var IOassets = require("io-assets");
- * IOassets.mergeInto(IO);
+ * var IO = require("io/extra/io-assets.js")(window);
  *
  *
  * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>

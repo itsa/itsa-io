@@ -1,13 +1,10 @@
 "use strict";
 
 /**
- * Extends io by adding the method `readXML` to it.
- * Should be called using  the provided `mergeInto`-method like this:
+ * Extends io by adding the methods `get`, `read`, `update`, `insert`, `send` and `delete` to it.
  *
  * @example
- * var IO = require("io");
- * var IOtransfer = require("io-transfer");
- * IOtransfer.mergeInto(IO);
+ * var IO = require("io/extra/io-transfer.js")(window);
  *
  * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
  * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
