@@ -2,13 +2,10 @@
 "use strict";
 
 /**
- * Extends io by adding the method `readXML` to it.
- * Should be called using  the provided `mergeInto`-method like this:
+ * Extends io by enabling `CORS` through XDR on IE<10.
  *
  * @example
- * var IO = require("io");
- * var IOcors = require("io-cors");
- * IOcors.mergeInto(IO);
+ * var IO = require("io/extra/io-cors.js")(window);
  *
  *
  * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>

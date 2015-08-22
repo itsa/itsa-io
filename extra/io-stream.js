@@ -1,5 +1,21 @@
 "use strict";
 
+/**
+ * Extends io by adding a progressHandler to xhr, used through `options.streamback`.
+ *
+ * @example
+ * var IO = require("io/extra/io-stream.js")(window);
+ *
+ *
+ * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
+ * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+ *
+ * @module io
+ * @submodule io-jsonp
+ * @class IO
+ * @since 0.0.1
+*/
+
 require('js-ext/lib/object.js');
 
 var NAME = '[io-stream]: ',

@@ -1,13 +1,11 @@
 "use strict";
 
 /**
- * Extends io by adding the method `readXML` to it.
- * Should be called using  the provided `mergeInto`-method like this:
+ * Extends io by adding the method `readObjectJSONP` to it.
+ * (under construction)
  *
  * @example
- * var IO = require("io");
- * var IOjsonp = require("io-jsonp");
- * IOjsonp.mergeInto(IO);
+ * var IO = require("io/extra/io-jsonp.js")(window);
  *
  *
  * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
@@ -18,9 +16,6 @@
  * @class IO
  * @since 0.0.1
 */
-
-// var NAME = '[io-jsonp]: ',
-// var idgenerator = require('utils').idgenerator;
 
 require('js-ext/lib/object.js');
 

@@ -2,12 +2,9 @@
 
 /**
  * Extends io by adding the method `readXML` to it.
- * Should be called using  the provided `mergeInto`-method like this:
  *
  * @example
- * var IO = require("io");
- * var IOxml = require("io-xml");
- * IOxml.mergeInto(IO);
+ * var IO = require("io/extra/io-xml.js")(window);
  *
  * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
  * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
