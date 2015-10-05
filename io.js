@@ -271,6 +271,7 @@ module.exports = function (window) {
          *    @param [options.timeout=3000] {number} to timeout the request, leading into a rejected Promise.
          *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
          *    @param [options.streamback] {Function} callbackfunction in case you want to process streams (needs io-stream module).
+         *    @param [options.stayActive] {Number} minimal time the request should be pending, even if IO has finished
          * @return {Promise} Promise holding the request. Has an additional .abort() method to cancel the request.
          * <ul>
          *     <li>on success: xhr {XMLHttpRequest1|XMLHttpRequest2} xhr-response</li>
@@ -283,7 +284,7 @@ module.exports = function (window) {
                 props = {},
                 xhr, promise;
             options = Object.isObject(options) ? options.deepClone() : {};
-            promise = Promise.manage(options.streamback);
+            promise = Promise.manage(options.streamback, options.stayActive);
 
             xhr = new window.XMLHttpRequest();
             props._isXHR2 = IO.xhr2support;

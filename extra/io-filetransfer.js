@@ -31,14 +31,6 @@ var NAME = '[io-filetransfer]: ',
     REVIVER = function(key, value) {
         return ((typeof value==='string') && value.toDate()) || value;
     },
-    messages = require('messages'),
-    MESSAGES = {
-        'read': 'reading...',
-        'update': 'saving...',
-        'insert': 'saving...',
-        'send': 'sending...',
-        'delete': 'saving...'
-    },
     ABORTED = 'Request aborted',
     KB_25 = 25 * 1024, // 25kb
     KB_100 = 100 * 1024, // 100kb
@@ -157,6 +149,7 @@ module.exports = function (window) {
      *           Function has 3 parameters: total, loaded and target (io-promise)
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
+     *    @param [options.stayActive] {Number} minimal time the request should be pending, even if IO has finished
      * @return {Promise}
      * on success:
         * Object any received data
@@ -170,7 +163,7 @@ module.exports = function (window) {
             promiseHash = [],
             ioHash = [],
             i = 0,
-            chunkSize, end, size, returnPromise, message, filename, headers, notify,
+            chunkSize, end, size, returnPromise, filename, headers, notify,
             ioPromise, partialSize, notifyResolved, hashPromise, responseObject, setXHR;
         if (!IO.supportXHR2) {
             return Promise.reject('This browser does not support fileupload');
@@ -323,11 +316,6 @@ module.exports = function (window) {
             });
             returnPromise.reject(new Error(ABORTED));
         };
-        // send a message to ITSA's the Message's system so that any statusbar can show a spinner - if it wants to:
-        message = messages.message(MESSAGES.send, {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
-        returnPromise.finally(function() {
-            message.fulfill();
-        });
         return returnPromise;
     };
 
