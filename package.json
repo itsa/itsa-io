@@ -1,6 +1,6 @@
 {
     "name": "itsa-io",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Promised IO",
     "author": [
         {
@@ -17,6 +17,7 @@
     },
     "keywords": [
         "itsa",
+        "itsasbreuk",
         "io",
         "promise"
     ],
