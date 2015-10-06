@@ -22,7 +22,6 @@ require('polyfill/polyfill-base.js');
 /*jshint proto:true */
 var NAME = '[io-transfer]: ',
     createHashMap = require('js-ext/extra/hashmap.js').createMap,
-    messages = require('messages'),
     PROTO_SUPPORTED = !!Object.__proto__,
     REVIVER = function(key, value) {
         return ((typeof value==='string') && value.toDate()) || value;
@@ -51,14 +50,7 @@ var NAME = '[io-transfer]: ',
     REGEXP_OBJECT = /^( )*{/,
     REGEXP_REMOVE_LAST_COMMA = /^(.*),( )*$/,
     SPINNER_ICON = 'spinnercircle-anim',
-    MIN_SHOWUP = 500,
-    MESSAGES = {
-        'read': 'reading...',
-        'update': 'saving...',
-        'insert': 'saving...',
-        'send': 'sending...',
-        'delete': 'saving...'
-    };
+    MIN_SHOWUP = 500;
 /*jshint proto:false */
 
 module.exports = function (window) {
@@ -137,6 +129,7 @@ module.exports = function (window) {
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      *    @param [options.preventCache=false] {boolean} whether to prevent caching --> a timestamp is added by parameter _ts
+     *    @param [options.stayActive] {Number} minimal time the request should be pending, even if IO has finished
      * @return {Promise}
      * on success:
         * xhr {XMLHttpRequest|XDomainRequest} xhr-response
@@ -145,7 +138,7 @@ module.exports = function (window) {
     */
     IO.get = function (url, options) {
         console.log(NAME, 'get --> '+url);
-        var ioPromise, returnPromise, message;
+        var ioPromise, returnPromise;
         options || (options={});
         options.url = url;
         options.method = 'GET';
@@ -162,10 +155,6 @@ module.exports = function (window) {
         );
         // set `abort` to the thennable-promise:
         returnPromise.abort = ioPromise.abort;
-        message = messages.message(MESSAGES.read, {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
-        returnPromise.finally(function() {
-            message.fulfill();
-        });
         return returnPromise;
     };
 
@@ -201,6 +190,7 @@ module.exports = function (window) {
      *    @param [options.parseProtoCheck] {Function} to determine in what case the specified `parseProto` should be set as the prototype.
      *            The function accepts the `object` as argument and should return a trully value in order to set the prototype.
      *            When not specified, `parseProto` will always be applied (if `parseProto`is defined)
+     *    @param [options.stayActive] {Number} minimal time the request should be pending, even if IO has finished
      * @return {Promise}
      * on success:
         * Object received data
@@ -209,7 +199,7 @@ module.exports = function (window) {
     */
     IO.read = function(url, params, options) {
         console.log(NAME, 'read  --> '+url+' params: '+JSON.stringify(params));
-        var ioPromise, returnPromise, message;
+        var ioPromise, returnPromise;
         options || (options={});
         options.headers || (options.headers={});
         options.url = url;
@@ -234,10 +224,6 @@ module.exports = function (window) {
         );
         // set `abort` to the thennable-promise:
         returnPromise.abort = ioPromise.abort;
-        message = messages.message(MESSAGES.read, {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
-        returnPromise.finally(function() {
-            message.fulfill();
-        });
         return returnPromise;
     };
 
@@ -283,6 +269,7 @@ module.exports = function (window) {
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
+     *    @param [options.stayActive] {Number} minimal time the request should be pending, even if IO has finished
      * @return {Promise}
      * on success:
         * response {Object} usually, the final object-data, possibly modified
@@ -331,6 +318,7 @@ module.exports = function (window) {
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
+     *    @param [options.stayActive] {Number} minimal time the request should be pending, even if IO has finished
      * @return {Promise}
      * on success:
         * response {Object} usually, the final object-data, possibly modified, holding the key
@@ -374,6 +362,7 @@ module.exports = function (window) {
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
+     *    @param [options.stayActive] {Number} minimal time the request should be pending, even if IO has finished
      * @return {Promise}
      * on success:
         * response {Object|String} any response you want the server to return.
@@ -389,7 +378,7 @@ module.exports = function (window) {
             IO[verb] = function (url, data, options) {
                 console.log(NAME, verb+' --> '+url+' data: '+JSON.stringify(data));
                 var instance = this,
-                    allfields, useallfields, parseJSONDate, ioPromise, returnPromise, message;
+                    allfields, useallfields, parseJSONDate, ioPromise, returnPromise;
                 options || (options={});
                 allfields = options.allfields,
                 useallfields = (typeof allfields==='boolean') ? allfields : (verb!=='insert');
@@ -421,10 +410,6 @@ module.exports = function (window) {
                 );
                 // set `abort` to the thennable-promise:
                 returnPromise.abort = ioPromise.abort;
-                message = messages.message(MESSAGES[verb], {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
-                returnPromise.finally(function() {
-                    message.fulfill();
-                });
                 return returnPromise;
             };
         }
@@ -451,6 +436,7 @@ module.exports = function (window) {
      *    @param [options.timeout=3000] {Number} to timeout the request, leading into a rejected Promise.
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
+     *    @param [options.stayActive] {Number} minimal time the request should be pending, even if IO has finished
      * @return {Promise}
      * on success:
         * response {Object|String} any response you want the server to return.
@@ -463,7 +449,7 @@ module.exports = function (window) {
 
     IO[DELETE] = function (url, deleteKey, options) {
         console.log(NAME, 'delete --> '+url+' deleteKey: '+JSON.stringify(deleteKey));
-        var ioPromise, returnPromise, message;
+        var ioPromise, returnPromise;
         options || (options={});
         options.url = url;
         // method will be uppercased by IO.xhr
@@ -483,10 +469,6 @@ module.exports = function (window) {
         );
         // set `abort` to the thennable-promise:
         returnPromise.abort = ioPromise.abort;
-        message = messages.message(MESSAGES['delete'], {level: 4, icon: SPINNER_ICON, stayActive: MIN_SHOWUP});
-        returnPromise.finally(function() {
-            message.fulfill();
-        });
         return returnPromise;
     };
 

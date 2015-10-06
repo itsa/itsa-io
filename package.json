@@ -1,6 +1,6 @@
 {
-    "name": "io",
-    "version": "0.0.1",
+    "name": "itsa-io",
+    "version": "1.0.1",
     "description": "Promised IO",
     "author": [
         {
@@ -17,16 +17,16 @@
     },
     "keywords": [
         "itsa",
+        "itsasbreuk",
         "io",
         "promise"
     ],
-    "main": "io.js",
+    "main": "index.js",
     "directories": {
         "extra": "./extra"
     },
     "dependencies": {
         "polyfill": "itsa/polyfill",
-        "messages": "itsa/messages",
         "js-ext": "itsa/js-ext",
         "utils": "itsa/utils",
         "xmldom": "^0.1.19",
