@@ -187,6 +187,7 @@ module.exports = function (window) {
      *    @param [options.withCredentials=false] {boolean} Whether or not to send credentials on the request.
      *    @param [options.parseJSONDate=false] {boolean} Whether the server returns JSON-stringified data which has Date-objects.
      *    @param [options.parseProto] {Object} to set the prototype of any object.
+     *    @param [options.preventCache=false] {boolean} whether to prevent caching --> a timestamp is added by parameter _ts
      *    @param [options.parseProtoCheck] {Function} to determine in what case the specified `parseProto` should be set as the prototype.
      *            The function accepts the `object` as argument and should return a trully value in order to set the prototype.
      *            When not specified, `parseProto` will always be applied (if `parseProto`is defined)
@@ -205,6 +206,10 @@ module.exports = function (window) {
         options.url = url;
         options.method = 'GET';
         options.data = params;
+        if (options.preventCache) {
+            options.data || (options.data={});
+            options.data._ts = Date.now();
+        }
         options.headers.Accept = 'application/json';
         // we don't want the user to re-specify the server's responsetype:
         delete options.responseType;
