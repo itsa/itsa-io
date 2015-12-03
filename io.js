@@ -62,6 +62,8 @@ module.exports = function (window) {
 
         _xhrList: [],
 
+        _runningRequests: [],
+
         /**
          * Initializes the xhr-instance, based on the config-params.
          * This method is the standard way of doing xhr-requests without processing streams.
@@ -256,6 +258,17 @@ module.exports = function (window) {
         },
 
         /**
+         * Aborts all running io-requests
+        */
+        abortAll: function() {
+            var instance = this;
+            instance._runningRequests.forEach(function(promise) {
+                promise.abort();
+            });
+            instance._runningRequests.length = 0;
+        },
+
+        /**
          * Sends a HTTP request to the server and returns a Promise with an additional .abort() method to cancel the request.
          * This method is the standard way of doing xhr-requests without processing streams.
          *
@@ -316,6 +329,13 @@ module.exports = function (window) {
             });
 
             instance._initXHR(xhr, options, promise);
+
+            // add to interbal hash:
+            instance._runningRequests.push(promise);
+            // remove it when ready:
+            promise.finally(function() {
+                instance._runningRequests.remove(promise);
+            });
 
             return promise;
         }
